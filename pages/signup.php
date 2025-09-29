@@ -4,7 +4,7 @@
 
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-		// require('../util/mysqli_connect.php');
+		require('../util/mysqli_connect.php');
 
 		$errors = [];
 
@@ -20,7 +20,7 @@
 		}
 
 		if (!empty($_POST['email'])) {
-			$e = mysqli_real_escape_string($dbc, trim($_POST['first_name']));
+			$e = mysqli_real_escape_string($dbc, trim($_POST['email']));
 
 			$epattern = '/\b[\w.-]+@[\w.-]+\.[A-Za-z]{2,6}\b/';
 			if (preg_match($epattern, $e)) {
@@ -29,18 +29,18 @@
 				if ($r) {
 					$rc = mysqli_num_rows($r);
 					if ($rc > 0) {
-						$errors[] = 'That email address is already in use.'
+						$errors[] = 'That email address is already in use.';
 					}
 				}
 			} else {
-				$errors[] = 'Email address is not correctly formatted.'
+				$errors[] = 'Email address is not correctly formatted.';
 			}
 		}
 
 		if (!empty($_POST['phone'])){
 			$pn = mysqli_real_escape_string($dbc, trim($_POST['phone']));
 
-			$pnpatter = '/\d{3}-\d{3}-\d{4}/'
+			$pnpattern = '/\d{3}-\d{3}-\d{4}/';
 			if (preg_match($pnpattern, $pn)) {
 				$q = "SELECT user_id FROM users WHERE phone = '$pn'";
 				$r = @mysqli_query($dbc, $q);
@@ -65,7 +65,7 @@
 
 			$a = md5(uniqid(rand(), true));
 
-			$q = "INSERT INTO users (first_name, last_name, email, phone, pass, active, registration_date) VALUES ('$fn', '$ln', '$e', '$pn', SHA2('$p', 512), '$a', NOW() )"
+			$q = "INSERT INTO users (first_name, last_name, email, phone, pass, active, registration_date) VALUES ('$fn', '$ln', '$e', '$pn', SHA2('$p', 512), '$a', NOW() )";
 			$r = @mysqli_query($dbc, $q);
 			if($r) {
 
@@ -99,7 +99,7 @@
 			<p>Please enter your information</p>
 			<p>First Name: <input type="text" name="first_name" size="20" maxlength="40" value="<?php if (isset($_POST['first_name'])) echo $_POST['first_name']; ?>"></p>
 			<p>Last Name: <input type="text" name="last_name" size=20 maxlength="40" value="<?php if(isset($_POST['last_name'])) echo $_POST['last_name']; ?>"></p>
-			<p>Email Address: <input type="email" name="email" size="40" maxlength="60" value="<?php if(isset($_POST['email'])) echo $_POST['last_name']; ?>"></p>
+			<p>Email Address: <input type="email" name="email" size="40" maxlength="60" value="<?php if(isset($_POST['email'])) echo $_POST['email']; ?>"></p>
 			<p>Phone Number: <input type="text" name="phone" size="20" maxlength="40" value="<?php if (isset($_POST['phone'])) echo $_POST['phone']; ?>" placeholder="555-555-5555"></p>
 			<p>Password: <input type="password" name="pass1" size="10" maxlength="20"></p>
 			<p>Confirm Password: <input type="password" name="pass2" size="10" maxlength="20"></p>
