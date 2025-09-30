@@ -48,10 +48,15 @@
 				<ul class="dropdown-menu">
 					<?php
 						if(isset($_SESSION['user_id'])) {
-							echo '
-								<li><a class="dropdown-item" href="../pages/user.php">Settings</a></li>
-								<li><a class="dropdown-item" href="../pages/orders.php">Orders</a></li>
-								<li><a class="dropdown-item" href="../pages/signout.php">Signout</a></li>';
+							echo '<li><a class="dropdown-item" href="../pages/user.php">Settings</a></li>';
+							if ($_SESSION['user_level'] == 1) {
+								echo '<li><a class="dropdown-item" href="../pages/orders.php">Orders</a></li>';
+							} else {
+								echo '<li><a class="dropdown-item" href="../pages/adminorders.php">Orders</a></li>';
+								echo '<li><a class="dropdown-item" href="../pages/adminseeds.php">Edit Seeds</a></li>';
+								echo '<li><a class="dropdown-item" href="../pages/adminusers.php">Edit Users</a></li>';
+							}
+								echo '<li><a class="dropdown-item" href="../pages/signout.php">Signout</a></li>';
 						} else {
 							echo '
 								<li><a class="dropdown-item" href="../pages/signup.php">Signup</a></li>
