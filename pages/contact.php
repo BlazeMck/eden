@@ -1,5 +1,5 @@
 <?php
-	$page_title = '';
+	$page_title = 'Contact Us';
 	include('../includes/header.html');
 ?>
 </head>
