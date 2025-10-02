@@ -1,4 +1,13 @@
 <?php
+
+	require '../vendor/autoload.php';
+	require '../util/keys.php';
+	use \Mailjet\Resources;
+
+	// Use your saved credentials, specify that you are using Send API v3.1
+
+	$mj = new \Mailjet\Client($MJ_PUBLIC, $MJ_PRIVATE,true,['version' => 'v3.1']);
+
 	$page_title = 'Create Account';
 	include('../includes/header.html');
 
@@ -69,11 +78,33 @@
 			$r = @mysqli_query($dbc, $q);
 			if($r) {
 
-				$url = 'http://localhost/eden/';
-				$body = "Thank you for registering for Eden's Seed Reserve! To activate your account, please follow this link:\n\n";
+				$url = 'http://localhost/eden/pages/activate.php?email='. urlencode($e) .'&id='. $a;
 
-				$body .= $url .'pages/activate.php?email='. urlencode($e) .'&id='. $a;
-				mail('blazemckinlay@gmail.com', 'Registration Confirmation - Eden Seed Reserve', $body, 'From: admin@edensr.com');
+			$body = [
+				'Messages' => [
+					[
+						'From' => [
+							'Email' => "blazemckinlay@gmail.com",
+							'Name' => "Eden Seed Reserve"
+						],
+						'To' => [
+							[
+								'Email' => $e,
+								'Name' => "$fn $ln"
+							]
+						],
+						'Subject' => "Welcome to Eden Seed Reserve!!",
+						'TextPart' => "Activation Email",
+						'HTMLPart' => "<h3>Hello $fn,</h3><p>In order to login and access your account on Eden Seed Reserve's website you need to activate your email.</p>
+						<p>To activate your email, please follow this link:</p><br>
+						<h4><a href=\"$url\">$url</a></h4><br>
+						<p>We appreciate you taking the time to join our family!</p>"
+					]
+				]
+			];
+
+				$response = $mj->post(Resources::$Email, ['body' => $body]);
+				$response->success() && var_dump($response->getData());
 
 				echo '<h1>Thank you for registering, '. $fn .' '. stripslashes($ln) .'!</h1>
 				<p>A confirmation email has been sent to your address. Please click on the link in that email in order to activate your account.</p><p><br></p>';

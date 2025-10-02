@@ -1,0 +1,4 @@
+<?php
+    $MJ_PUBLIC = 'fe844b065c47c94b20e735bdccf319b9';
+    $MJ_PRIVATE = 'eb9d8e6206273615ca513814c644731a';
+?>
