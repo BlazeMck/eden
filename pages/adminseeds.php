@@ -42,30 +42,21 @@
 	$sort = (isset($_GET['sort'])) ? $_GET['sort'] : 'id';
 
 	switch ($sort) {
-		case 'id':
-			$order_by = 'seed_id ';
+		case 'ida':
+			$order_by = 'seed_id ASC';
 			break;
-		case 'sn':
-			$order_by = 'seed_name ';
+		case 'sna':
+			$order_by = 'seed_name ASC';
 			break;
-		default:
-			$order_by = 'seed_id ';
-			$sort = 'id';
+		case 'idd':
+			$order_by = 'seed_id DESC';
 			break;
-	}
-
-	$order = (isset($_GET['order'])) ? $_GET['order'] : 'asc';
-
-	switch ($order) {
-		case 'asc':
-			$order_by .= 'ASC';
-			break;
-		case 'desc':
-			$order_by .= 'DESC';
+		case 'snd':
+			$order_by = 'seed_name DESC';
 			break;
 		default:
-			$order_by .= 'ASC';
-			$order = 'asc';
+			$order_by = 'seed_id ASC';
+			$sort = 'ida';
 			break;
 	}
 
@@ -78,8 +69,8 @@
 				<tr>
 					<th>Edit</th>
 					<th>Delete</th>
-					<th><a href="adminseeds.php?sort=id">Seed ID</a></th>
-					<th><a href="adminseeds.php?sort=sn">Seed Name</a></th>
+					<th><a href="adminseeds.php?sort='. ($order_by == "seed_id ASC" ? "idd" : "ida") .'">Seed ID</a></th>
+					<th><a href="adminseeds.php?sort='. ($order_by == "seed_name ASC" ? "snd" : "sna") .'">Seed Name</a></th>
 				</tr>
 			</thead>
 			<tbody>';
@@ -93,10 +84,34 @@
 		echo '
 			<tr bgcolor="'. $bg .'">
 				<td><a href="editseed.php?id='. $row['seed_id'] .'">Edit</a></td>
-				<td><a href="deleteseed.php?id='. $row['seed_id'] .'">Delete</a></td>
+				<td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropDelete'. $row['seed_id'] .'">Delete</button></td>
 				<td>'. $row['seed_id'] .'</td>
 				<td>'. $row['seed_name'] .'</td>
 			</tr>';
+
+		echo '
+
+			<!-- Modal -->
+			<div class="modal fade" id="staticBackdropDelete'. $row['seed_id'] .'" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="staticBackdropLabel">Delete Seed - '. $row['seed_name'] .'</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					Are you sure you want to delete entry for <strong>'. $row['seed_name'] .'</strong>?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<form action="../util/deleteseed.php?id='. $row['seed_id'] .'" method="post">
+						<input type="submit" class="btn btn-primary" value="DELETE">
+					</form>
+				</div>
+				</div>
+			</div>
+			</div>
+		';
 	}
 
 	echo '</tbody></table>';
@@ -131,6 +146,12 @@
 	echo '<form action="addseed.php" novalidate>
 		  <input type="submit" name="submit" value="Add New Seed">
 		  </form>';
+?>
 
+<script type="module" src="../util/adminmodals.js"></script>
+			
+</div>
+
+<?php
 	include('../includes/footer.html');
 ?>
