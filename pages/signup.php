@@ -107,7 +107,7 @@
 				$response->success() && var_dump($response->getData());
 
 				echo '<h1>Thank you for registering, '. $fn .' '. stripslashes($ln) .'!</h1>
-				<p>A confirmation email has been sent to your address. Please click on the link in that email in order to activate your account.</p><p><br></p>';
+				<p>A confirmation email has been sent to your address. Please click on the link in that email in order to activate your account.</p><p>Make sure to check spam folders if you do not see your email.<br></p>';
 				include('../includes/footer.html');
 				exit();
 			}
