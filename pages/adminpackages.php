@@ -24,9 +24,11 @@
 	}
 	$jsonData = json_encode($phpData);
 
+	
+
 	$display = 5;
 
-	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	/* if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	 	if (isset($_POST['delete']) && is_numeric($_POST['delete'])) {
 		
@@ -81,6 +83,7 @@
 			}
 		}
 	}
+		*/
 
 	if (isset($_GET['p']) && is_numeric($_GET['p'])) {
 
@@ -166,10 +169,14 @@
 				<td>'. $row['package_price'] .'</td>
 				<td>';
 			$id = $row['package_id'];
-			$q = "SELECT s.seed_name, s.seed_id, p.package_id FROM packages AS p JOIN package_contents AS pc ON p.package_id = pc.package_id JOIN seeds AS s ON s.seed_id=pc.seed_id WHERE p.package_id = $id";
+			$q = "SELECT s.seed_name, s.seed_id, p.package_id, pc.seed_qty FROM packages AS p JOIN package_contents AS pc ON p.package_id = pc.package_id JOIN seeds AS s ON s.seed_id=pc.seed_id WHERE p.package_id = $id";
 			$result = @mysqli_query($dbc, $q);
+			$packageContents = [];
+			$jsPackageContents = '';
 			while ($cRow = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-				echo '<p>'. $cRow['seed_id'] .' - '. $cRow['seed_name'] .'</p>';
+				echo '<p>'. $cRow['seed_id'] .': '. $cRow['seed_name'] .' - Qty '. $cRow['seed_qty'] .'</p>';
+				array_push($packageContents, ['id' => $cRow['seed_id'], 'name' => $cRow['seed_name'], 'qty' => $cRow['seed_qty']]);
+				$jsPackageContents .= $cRow['seed_id'] .'-';
 			}
 			echo '</td></tr>';
 
@@ -188,8 +195,32 @@
 					<p>Name: <input type="text" name="name" value="'. (isset($row['package_name']) ? $row['package_name'] : null) .'"></p>
 					<p>Price: <input type="number" name="price" value="'. (isset($row['package_price']) ? $row['package_price'] : null) .'"></p>
 					<p>Description:</p> <textarea name="desc" rows="5" cols="40">'. (isset($row['package_desc']) ? $row['package_desc'] : null) .'</textarea>
+					<div class="d-flex flex-row pb-2 pe-2">
+						<div class="me-auto"><p><strong>Seed Name</strong></p></div>
+						<div class="me-5"><p><strong>Quantity</strong></p></div>
+						<div><p><strong>Remove</strong></p></div>
+					</div>
 					<div id="content_select">
-						<p>Contents: 
+						<div id="selected">';
+						foreach ($packageContents as $seed) {
+						echo '
+							<div class="d-flex flex-row pb-2 pe-2" id="selectSeed'. $seed['id'] .'">
+								<div class="me-auto"><p>'. $seed['name'] .'</p></div>
+								<div class="me-5"><p><input type="text" size="2" name="qty'. $seed['id'] .'" value="'. $seed['qty'] .'"></p></div>
+								<div><p><button type="button" class="btn-close" onclick="removeSeed('. $seed['id'] .')"></button></p></div>
+							</div>
+							';
+						}
+						echo '
+						</div>
+						<p>
+							Seed: 
+							<input list="seeds" name="seeds" id="selection" size="20" onfocus="populateList(\''. $jsPackageContents .'\')">
+							<datalist id="seeds">
+							</datalist>
+							Quantity: <input type="text" name="qty" id="qty" size="3">
+							<button type="button" name="addseed" onclick="selectSeed('. $row['package_id'] .')">Add Seed</button>
+						</p>
 					</div>
 					<p>Image: To be added</p>
 				</div>
@@ -292,7 +323,53 @@
 			
 </div>
 
-<script src="../util/adminmodals.js"></script>
+<script>
+	const jsData = <?php echo $jsonData; ?>;
+	const selectedArea = document.getElementById('selected');
+	const selectionArea = document.getElementById('selection');
+	const selectionQuantity = document.getElementById('qty');
+	var outputHTML = selectedArea.innerHTML;
+
+	function selectSeed(packageId) {
+		console.log(packageId);
+		const id = selectionArea.value.split(" ")[0];
+		const name = selectionArea.value.split(" ")[2];
+		const qty = selectionQuantity.value;
+		outputHTML += `<div class="d-flex flex-row pb-2 pe-2" id="${id}">
+						<div class="me-auto"><p>${name}</p></div>
+						<div class="me-5"><p><input type="text" size="2" name="qty${id}" value="${qty}"></p></div>
+						<div><p><button type="button" class="btn-close" onclick="removeSeed(${id})"></button></p></div>
+					   </div>
+		`;
+		selectedArea.innerHTML = outputHTML;
+		selectionArea.value = "";
+		selectionQuantity.value = "";
+	}
+
+	function removeSeed(seedId) {
+		const seedToRemove = document.getElementById(`selectSeed${seedId}`);
+		seedToRemove.remove();
+	}
+
+	function populateList(currentSeeds) {
+		const list = document.getElementById('seeds');
+		var currentList = currentSeeds.split("-");
+		currentList.pop();
+		var outputList = ''
+		jsData.forEach(populate);
+		list.innerHTML = outputList;
+		
+
+		function populate(seed) {
+			
+			if (!currentList.includes(seed.id)) {
+				outputList += `<option value="${seed.id} - ${seed.name}">`;
+			}
+		}
+		
+	}
+
+</script>
 
 <?php
 	include('../includes/footer.html');
