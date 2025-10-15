@@ -28,62 +28,83 @@
 
 	$display = 5;
 
-	/* if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	 	if (isset($_POST['delete']) && is_numeric($_POST['delete'])) {
 		
 			$id = $_POST['delete'];
 
-			$q = "SELECT p.package_id, p.package_name FROM packages AS p LEFT JOIN package_contents AS pc ON p.package_id=pc.package_id WHERE pc.seed_id=$id";
+			$q = "DELETE FROM package_contents WHERE package_id = $id";
 			$r = @mysqli_query($dbc, $q);
-			if (mysqli_affected_rows($dbc) > 0) {
-				echo 'Seed found in packages, please remove seed from the following packages before attempting to delete:';
-				while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
-					echo '<p>Package '. $row['package_id'] .' - '. $row['package_name'] .'</p>';
-				}
-			} else {
-				$q = "DELETE FROM seeds WHERE seed_id=$id LIMIT 1";
-				$r = @mysqli_query($dbc, $q);
-				if (mysqli_affected_rows($dbc) == 1) {
-					
-					echo '<p>The seed has been deleted.</p>';
+			$q = "DELETE FROM packages WHERE package_id = $id";
+			$r = @mysqli_query($dbc, $q);
 
-				} else {
-					echo '<p class ="error">The seed could not be deleted due to a system error.</p>';
-					echo '<p>'. mysqli_error($dbc) .'<br>Query: '. $q .'</p>';
-				}
-			}
 		} elseif (isset($_POST['edit']) && is_numeric($_POST['edit'])) {
 
 			$id = $_POST['edit'];
 			$name = $_POST['name'];
-			$blurb = $_POST['blurb'];
+			$price = $_POST['price'];
 			$desc = $_POST['desc'];
+			$content = [['id' => $_POST['seed1'], 'qty' => $_POST['quantity1']],['id' => $_POST['seed2'], 'qty' => $_POST['quantity2']],['id' => $_POST['seed3'], 'qty' => $_POST['quantity3']],['id' => $_POST['seed4'], 'qty' => $_POST['quantity4']],['id' => $_POST['seed5'], 'qty' => $_POST['quantity5']]];
 
-			$q = "UPDATE seeds SET seed_name = '$name', seed_blurb = '$blurb', seed_desc = '$desc', image_uri = 'changedtbd' WHERE seed_id = $id";
+			$q = "UPDATE packages SET package_name = '$name', package_desc = '$desc', package_price = $price, image_uri = 'changedtbd' WHERE package_id = $id";
 			$r = @mysqli_query($dbc, $q);
 			if (mysqli_affected_rows($dbc) == 1) {
-				echo "<p>The seed - $name - has been updated.</p>";
+				echo "<p>The package - $name - has been updated.</p>";
+
+				$q = "DELETE FROM package_contents WHERE package_id = $id";
+				$r = @mysqli_query($dbc, $q);
+
+				$q = "INSERT INTO package_contents(package_id, seed_id, seed_qty) VALUES ";
+				foreach($content as $entry) {
+					$q .= '('. $id .', '. $entry['id'] .', '. $entry['qty'] .'), ';
+				}
+				$q = rtrim($q, ', ');
+				$r = @mysqli_query($dbc, $q);
+				if (mysqli_affected_rows($dbc) > 0) {
+					echo "<p>The contents of package - $name - has been updated.</p>";
+				} else {
+					echo '<p class="error">The package contents could not be updated due to a system error.</p>';
+					echo '<p>'. mysqli_error($dbc) .'<br>Query: '. $q .'</p>';
+				}
 			} else {
-				echo '<p class="error">The seed could not be updated due to a system error.</p>';
+				echo '<p class="error">The package could not be updated due to a system error.</p>';
 				echo '<p>'. mysqli_error($dbc) .'<br>Query: '. $q .'</p>';
 			}
 		} elseif (isset($_POST['add']) && is_numeric($_POST['add'])) {
 			$name = $_POST['name'];
-			$blurb = $_POST['blurb'];
+			$price = $_POST['price'];
 			$desc = $_POST['desc'];
+			$content = [['id' => $_POST['seed1'], 'qty' => $_POST['quantity1']],['id' => $_POST['seed2'], 'qty' => $_POST['quantity2']],['id' => $_POST['seed3'], 'qty' => $_POST['quantity3']],['id' => $_POST['seed4'], 'qty' => $_POST['quantity4']],['id' => $_POST['seed5'], 'qty' => $_POST['quantity5']]];
 
-			$q = "INSERT INTO seeds(seed_name, seed_blurb, seed_desc, image_uri) VALUES('$name', '$blurb', '$desc', 'addedtbd')";
+			$q = "INSERT INTO packages(package_name, package_price, package_desc, image_uri) VALUES ('$name', $price, '$desc', 'tobeadded-addnewpackage')";
 			$r = @mysqli_query($dbc, $q);
+
+			$q = "SELECT package_id FROM packages WHERE package_name='$name' AND package_desc='$desc'";
+			$r = @mysqli_query($dbc, $q);
+			$row = mysqli_fetch_array($r, MYSQLI_NUM);
+			$id = $row[0];
 			if (mysqli_affected_rows($dbc) == 1) {
-				echo "<p>The seed - $name - has been added.</p>";
+				echo "<p>The package - $name - has been added.</p>";
+
+				$q = "INSERT INTO package_contents(package_id, seed_id, seed_qty) VALUES ";
+				foreach($content as $entry) {
+					$q .= '('. $id .', '. $entry['id'] .', '. $entry['qty'] .'),';
+				}
+				$q = rtrim($q, ', ');
+				$r = @mysqli_query($dbc, $q);
+				if (mysqli_affected_rows($dbc) > 0) {
+					echo "<p>The contents of package - $name - has been added.</p>";
+				} else {
+					echo '<p class="error">The package contents could not be added due to a system error.</p>';
+					echo '<p>'. mysqli_error($dbc) .'<br>Query: '. $q .'</p>';
+				}
 			} else {
-				echo '<p class="error">The seed could not be added due to a system error.</p>';
+				echo '<p class="error">The package could not be updated due to a system error.</p>';
 				echo '<p>'. mysqli_error($dbc) .'<br>Query: '. $q .'</p>';
 			}
 		}
 	}
-		*/
 
 	if (isset($_GET['p']) && is_numeric($_GET['p'])) {
 
@@ -172,11 +193,9 @@
 			$q = "SELECT s.seed_name, s.seed_id, p.package_id, pc.seed_qty FROM packages AS p JOIN package_contents AS pc ON p.package_id = pc.package_id JOIN seeds AS s ON s.seed_id=pc.seed_id WHERE p.package_id = $id";
 			$result = @mysqli_query($dbc, $q);
 			$packageContents = [];
-			$jsPackageContents = '';
 			while ($cRow = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 				echo '<p>'. $cRow['seed_id'] .': '. $cRow['seed_name'] .' - Qty '. $cRow['seed_qty'] .'</p>';
 				array_push($packageContents, ['id' => $cRow['seed_id'], 'name' => $cRow['seed_name'], 'qty' => $cRow['seed_qty']]);
-				$jsPackageContents .= $cRow['seed_id'] .'-';
 			}
 			echo '</td></tr>';
 
@@ -193,34 +212,30 @@
 				</div>
 				<div class="modal-body">
 					<p>Name: <input type="text" name="name" value="'. (isset($row['package_name']) ? $row['package_name'] : null) .'"></p>
-					<p>Price: <input type="number" name="price" value="'. (isset($row['package_price']) ? $row['package_price'] : null) .'"></p>
+					<p>Price: <input type="number" step=0.01 name="price" value="'. (isset($row['package_price']) ? $row['package_price'] : null) .'"></p>
 					<p>Description:</p> <textarea name="desc" rows="5" cols="40">'. (isset($row['package_desc']) ? $row['package_desc'] : null) .'</textarea>
-					<div class="d-flex flex-row pb-2 pe-2">
-						<div class="me-auto"><p><strong>Seed Name</strong></p></div>
-						<div class="me-5"><p><strong>Quantity</strong></p></div>
-						<div><p><strong>Remove</strong></p></div>
-					</div>
-					<div id="content_select">
-						<div id="selected">';
-						foreach ($packageContents as $seed) {
-						echo '
-							<div class="d-flex flex-row pb-2 pe-2" id="selectSeed'. $seed['id'] .'">
-								<div class="me-auto"><p>'. $seed['name'] .'</p></div>
-								<div class="me-5"><p><input type="text" size="2" name="qty'. $seed['id'] .'" value="'. $seed['qty'] .'"></p></div>
-								<div><p><button type="button" class="btn-close" onclick="removeSeed('. $seed['id'] .')"></button></p></div>
-							</div>
-							';
+					<div id="content_select">';
+						for ($i = 0; $i < 5; $i++) {
+							$currentIndex = $i + 1;
+							isset($packageContents[$i]) ? $seed = $packageContents[$i] : '';
+							echo '
+								<p>
+									<select id="seed'. $currentIndex .'" name="seed'. $currentIndex .'">';
+										foreach($phpData as $listData) {
+											echo '<option value="'. $listData['id'] .'"';
+											if (isset($seed)){
+												if ($listData['id'] == $seed['id']) {
+													echo 'selected';
+												}
+											}
+											echo '>'. $listData['name'] .'</option>';
+										}
+							echo '
+									</select>
+									<input type=number step=1 name="quantity'. $currentIndex .'" size=3 value='. $seed['qty'] .'>
+								</p>';
 						}
-						echo '
-						</div>
-						<p>
-							Seed: 
-							<input list="seeds" name="seeds" id="selection" size="20" onfocus="populateList(\''. $jsPackageContents .'\')">
-							<datalist id="seeds">
-							</datalist>
-							Quantity: <input type="text" name="qty" id="qty" size="3">
-							<button type="button" name="addseed" onclick="selectSeed('. $row['package_id'] .')">Add Seed</button>
-						</p>
+				echo '
 					</div>
 					<p>Image: To be added</p>
 				</div>
@@ -304,15 +319,31 @@
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
-					<p>Name: <input type="text" name="name" value=""></p>
-					<p>Blurb: <input type="text" name="blurb" value=""></p>
+					<p>Name: <input type="text" name="name"></p>
+					<p>Price: <input type="number" step=0.01 name="price"></p>
 					<p>Description:</p> <textarea name="desc" rows="5" cols="40"></textarea>
+					<div id="content_select">';
+						for ($i = 0; $i < 5; $i++) {
+							$currentIndex = $i + 1;
+							echo '
+								<p>
+									<select id="seed'. $currentIndex .'" name="seed'. $currentIndex .'">';
+										foreach($phpData as $listData) {
+											echo '<option value="'. $listData['id'] .'">'. $listData['name'] .'</option>';
+										}
+							echo '
+									</select>
+									<input type=number step=1 name="quantity'. $currentIndex .'" size=3>
+								</p>';
+						}
+				echo '
+					</div>
 					<p>Image: To be added</p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 						<input type="submit" name="submit" value="CONFIRM" class="btn btn-primary">
-						<input type="hidden" name="add" value=0>
+						<input type="hidden" name="add" value=1>
 				</div>
 				</div>
 			</div>
@@ -322,54 +353,6 @@
 ?>
 			
 </div>
-
-<script>
-	const jsData = <?php echo $jsonData; ?>;
-	const selectedArea = document.getElementById('selected');
-	const selectionArea = document.getElementById('selection');
-	const selectionQuantity = document.getElementById('qty');
-	var outputHTML = selectedArea.innerHTML;
-
-	function selectSeed(packageId) {
-		console.log(packageId);
-		const id = selectionArea.value.split(" ")[0];
-		const name = selectionArea.value.split(" ")[2];
-		const qty = selectionQuantity.value;
-		outputHTML += `<div class="d-flex flex-row pb-2 pe-2" id="${id}">
-						<div class="me-auto"><p>${name}</p></div>
-						<div class="me-5"><p><input type="text" size="2" name="qty${id}" value="${qty}"></p></div>
-						<div><p><button type="button" class="btn-close" onclick="removeSeed(${id})"></button></p></div>
-					   </div>
-		`;
-		selectedArea.innerHTML = outputHTML;
-		selectionArea.value = "";
-		selectionQuantity.value = "";
-	}
-
-	function removeSeed(seedId) {
-		const seedToRemove = document.getElementById(`selectSeed${seedId}`);
-		seedToRemove.remove();
-	}
-
-	function populateList(currentSeeds) {
-		const list = document.getElementById('seeds');
-		var currentList = currentSeeds.split("-");
-		currentList.pop();
-		var outputList = ''
-		jsData.forEach(populate);
-		list.innerHTML = outputList;
-		
-
-		function populate(seed) {
-			
-			if (!currentList.includes(seed.id)) {
-				outputList += `<option value="${seed.id} - ${seed.name}">`;
-			}
-		}
-		
-	}
-
-</script>
 
 <?php
 	include('../includes/footer.html');
