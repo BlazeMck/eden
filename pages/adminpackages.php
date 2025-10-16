@@ -350,6 +350,7 @@
 			</form>
 			</div>
 		';
+		mysqli_close($dbc);
 ?>
 			
 </div>

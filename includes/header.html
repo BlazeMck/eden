@@ -5,7 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title><?php echo 'Eden Seed Reserve : '. $page_title; ?></title>
-	<?php session_start(); ?>
+	<?php session_start(); isset($_COOKIE['cart']) ? '' : setcookie('cart', '', time() + (86400 * 30), "/");?>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 	<link href="../css/sticky-footer-navbar.css" rel="stylesheet">
@@ -26,15 +26,42 @@
 				<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 				  Products
 				</a>
-				<ul class="dropdown-menu">
+				<ul class="dropdown-menu" style="width: 380px">
 				  <div class="d-flex flex-row">
-					<div class="d-flex flex-column">
+					<?php
+					require_once('../util/mysqli_connect.php');
+					echo '<div class="d-flex flex-column">
 						<li><a class="dropdown-item" href="../pages/order.php"><strong>Packaged Seeds</strong></a></li>
+						<div class="d-flex flex-column" style="flex-wrap: wrap; max-height: 300px;">';
+						$q = "SELECT package_name, package_id FROM packages";
+						$r = @mysqli_query($dbc, $q);
+						$num = 0;
+						while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
+							echo '<li><a class="dropdown-item" href="../pages/package.php?id='. $row['package_id'] .'">'. $row['package_name'] .'</a></li>';
+							$num++;
+							if ($num == 17) {
+								echo '<li><a class="dropdown-item" href="../pages/packages.php">See All...</a></li>';
+							}
+						}
+					echo '
+						</div>
 					</div>
 					<div class="d-flex flex-column">
 						<li><a class="dropdown-item" href="../pages/seeds.php"><strong>Seeds</strong></a></li>
-						<li><a class="dropdown-item" href="../pages/seed.php">seed pages not yet set</a></li>
-					</div>
+						<div class="d-flex flex-column border-start" style="flex-wrap: wrap; max-height: 300px;">';
+						$q = "SELECT seed_name, seed_id FROM seeds";
+						$r = @mysqli_query($dbc, $q);
+						$num = 1;
+						while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
+							echo '<li><a class="dropdown-item" href="../pages/seed.php?id='. $row['seed_id'] .'">'. $row['seed_name'] .'</a></li>';
+							$num++;
+							if ($num == 17) {
+								echo '<li><a class="dropdown-item" href="../pages/seeds.php">See All...</a></li>';
+							}
+						}
+					echo '</div>
+					</div>';
+					?>
 				  </div>
 				</ul>
 			  </li>

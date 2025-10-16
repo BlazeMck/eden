@@ -47,6 +47,59 @@
 			$name = $_POST['name'];
 			$blurb = $_POST['blurb'];
 			$desc = $_POST['desc'];
+			$errors = [];
+
+			$q = "SELECT * FROM seeds WHERE seed_id = $id";
+			$r = @mysqli_query($dbc, $q);
+			$rc = mysqli_num_rows($r);
+
+			if ($rc == 1){
+			$seed = mysqli_fetch_array($r, MYSQLI_ASSOC);
+
+			$target_dir = "../includes/media";
+			$target_file = $target_dir . basename($_FILES['image']['name']);
+			$uploadOk = true;
+			$imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+			
+			$imgErrors = [];
+			$check = getimagesize($_FILES['image']['tmp_name']);
+			if ($check == false) {
+				$uploadOk = false;
+				$imgErrors = "- The file uploaded wasn't an image.";
+			}
+
+			if (file_exists($target_file) && $target_file !== $seed['image_uri']) {
+				$uploadOk = false;
+				$imgErrors = "- An image with the same name is already in use by another item.";
+				$q = "SELECT * FROM seeds WHERE image_uri = $target_file";
+				$r = @mysqli_query($dbc, $q);
+				$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
+				$imgErrors = '-- File name in use by: '. $row['seed_id'] .' - '. $row['seed_name'];
+			}
+
+			if ($_FILES["image"]["size"] > 500000) {
+				$imgErrors = "- The file size of the uploaded image is larger than the upper limit, 500KB.";
+				$uploadOk = false;
+			}
+
+			if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+				$imgErrors = "- The file uploaded is of an unsupported file type. Supported types are .jpg, .jpeg, .png, or .gif.";
+				$uploadOk = false;
+			}
+
+			if (!$uploadOk) {
+				$errors = "The chosen image failed to upload for the following reason(s):";
+				$errors += $imgErrors;
+			}
+			
+
+				if ($seed['seed_name'] == $name && $seed['seed_blurb'] == $blurb && $seed['seed_desc'] == $desc && !$uploadOk) {
+					
+				}
+			} else {
+				$errors = "Selected seed does not exist.";
+			}
+
 
 			$q = "UPDATE seeds SET seed_name = '$name', seed_blurb = '$blurb', seed_desc = '$desc', image_uri = 'changedtbd' WHERE seed_id = $id";
 			$r = @mysqli_query($dbc, $q);
@@ -161,7 +214,7 @@
 					<p>Name: <input type="text" name="name" value="'. (isset($row['seed_name']) ? $row['seed_name'] : null) .'"></p>
 					<p>Blurb: <input type="text" name="blurb" value="'. (isset($row['seed_blurb']) ? $row['seed_blurb'] : null) .'"></p>
 					<p>Description:</p> <textarea name="desc" rows="5" cols="40">'. (isset($row['seed_desc']) ? $row['seed_desc'] : null) .'</textarea>
-					<p>Image: To be added</p>
+					<p>Image: <input type="file" name="image" id="image"></p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
