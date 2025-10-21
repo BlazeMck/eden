@@ -13,20 +13,12 @@
 			$r = @mysqli_query($dbc, $q);
 			$num = 0;
 			while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
-				$position = '';
 
-				switch ($num % 4) {
-					case 0:
-						break;
-					case 1:
-						break;
-					case 2:
-						break;
-					case 3:
-						break;
-					default:
-						break;
-
+				$src = '';
+				if (file_exists($row['image_uri'])) {
+					$src = $row['image_uri'];
+				} else {
+					$src = "../includes/media/cornucopia-temp-DONOTPUBLISH.jpg";
 				}
 				
 				if ($num % 4 == 0) {
@@ -34,7 +26,7 @@
 				}
 				echo '
 					<div class="col border p-1" style="background-color: white; max-width: 250px; margin-left: 50px; margin-top: 25px;" onclick="location.href=\'package.php?id='. $row['package_id'] .'\'">
-						<image src="../includes/media/cornucopia-temp-DONOTPUBLISH.jpg" style="margin-bottom: 5px;">
+						<image src="'. $src .'" style="margin-bottom: 5px;">
 						<p>'. $row['package_name'] .' - $'. $row['package_price'] .'</p>
 					</div>
 				';

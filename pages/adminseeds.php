@@ -43,11 +43,31 @@
 			}
 		} elseif (isset($_POST['edit']) && is_numeric($_POST['edit'])) {
 
-			$id = $_POST['edit'];
-			$name = $_POST['name'];
-			$blurb = $_POST['blurb'];
-			$desc = $_POST['desc'];
 			$errors = [];
+			
+			$name = '';
+			$blurb = '';
+			$desc = '';
+			$target_file = null;
+			$id = $_POST['edit'];
+
+			if (isset($_POST['name'])) {
+				$name = $_POST['name'];
+			} else {
+				$errors[] = "Seed name is required.";
+			}
+
+			if (isset($_POST['blurb'])) {
+				$blurb = $_POST['blurb'];
+			} else {
+				$errors[] = "Seed blurb is required.";
+			}
+			
+			if (isset($_POST['desc'])) {
+				$desc = $_POST['desc'];
+			} else {
+				$errors[] = "Seed description is required.";
+			}
 
 			$q = "SELECT * FROM seeds WHERE seed_id = $id";
 			$r = @mysqli_query($dbc, $q);
@@ -55,72 +75,166 @@
 
 			if ($rc == 1){
 			$seed = mysqli_fetch_array($r, MYSQLI_ASSOC);
-
-			$target_dir = "../includes/media";
-			$target_file = $target_dir . basename($_FILES['image']['name']);
-			$uploadOk = true;
-			$imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+			$target_file = $seed['image_uri'];
 			
-			$imgErrors = [];
-			$check = getimagesize($_FILES['image']['tmp_name']);
-			if ($check == false) {
-				$uploadOk = false;
-				$imgErrors = "- The file uploaded wasn't an image.";
-			}
+				if (isset($_FILES['upload']) && file_exists($_FILES['upload']['tmp_name'])) {
+					$target_dir = "../includes/media/";
+					$target_file = $target_dir . basename($_FILES["upload"]["name"]);
+					$uploadOk = 1;
+					$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 
-			if (file_exists($target_file) && $target_file !== $seed['image_uri']) {
-				$uploadOk = false;
-				$imgErrors = "- An image with the same name is already in use by another item.";
-				$q = "SELECT * FROM seeds WHERE image_uri = $target_file";
-				$r = @mysqli_query($dbc, $q);
-				$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
-				$imgErrors = '-- File name in use by: '. $row['seed_id'] .' - '. $row['seed_name'];
-			}
+					// Check if image file is a actual image or fake image
+					if(isset($_POST["submit"])) {
+					$check = getimagesize($_FILES["upload"]["tmp_name"]);
+					if($check !== false) {
+						$uploadOk = 1;
+					} else {
+						$errors[] = "File is not an image.";
+						$uploadOk = 0;
+					}
+					}
 
-			if ($_FILES["image"]["size"] > 500000) {
-				$imgErrors = "- The file size of the uploaded image is larger than the upper limit, 500KB.";
-				$uploadOk = false;
-			}
+					$q = "SELECT * FROM seeds WHERE image_uri = '$target_file' AND seed_id <> $id";
+					$r = @mysqli_query($dbc, $q);
+					if (mysqli_num_rows($r) > 0) {
+						$errors[] = "Sorry, you are trying to replace a file with the same name that is in use by a different resource, please consider renaming this file to something different.";
+						$uploadOk = 0;
+					}
 
-			if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-				$imgErrors = "- The file uploaded is of an unsupported file type. Supported types are .jpg, .jpeg, .png, or .gif.";
-				$uploadOk = false;
-			}
+					// Check file size
+					if ($_FILES["upload"]["size"] > 500000) {
+						$errors[] = "Sorry, your file is too large.";
+						$uploadOk = 0;
+					}
 
-			if (!$uploadOk) {
-				$errors = "The chosen image failed to upload for the following reason(s):";
-				$errors += $imgErrors;
-			}
-			
+					// Allow certain file formats
+					if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+					&& $imageFileType != "gif" ) {
+						$errors[] = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+						$uploadOk = 0;
+					}
 
-				if ($seed['seed_name'] == $name && $seed['seed_blurb'] == $blurb && $seed['seed_desc'] == $desc && !$uploadOk) {
-					
+					// Check if $uploadOk is set to 0 by an error
+					if ($uploadOk == 0) {
+						$errors[] = "Sorry, your file was not uploaded.";
+					// if everything is ok, try to upload file
+					} else {
+						if (!move_uploaded_file($_FILES["upload"]["tmp_name"], $target_file)) {
+							$errors[] = "Sorry, there was an error uploading your file.";
+						}
+					}
 				}
 			} else {
-				$errors = "Selected seed does not exist.";
+				$errors[] = "Selected seed does not exist.";
 			}
 
+			if ($seed['seed_name'] == $name && $seed['seed_blurb'] == $blurb && $seed['seed_desc'] == $desc && ($seed['image_uri'] == $target_file || !isset($target_file))) {
+				$errors[] = "No changes made to selected seed.";
+			}
 
-			$q = "UPDATE seeds SET seed_name = '$name', seed_blurb = '$blurb', seed_desc = '$desc', image_uri = 'changedtbd' WHERE seed_id = $id";
-			$r = @mysqli_query($dbc, $q);
-			if (mysqli_affected_rows($dbc) == 1) {
-				echo "<p>The seed - $name - has been updated.</p>";
+			if (!$errors) {
+				$q = "UPDATE seeds SET seed_name = '$name', seed_blurb = '$blurb', seed_desc = '$desc', image_uri = '$target_file' WHERE seed_id = $id";
+				$r = @mysqli_query($dbc, $q);
+				if (mysqli_affected_rows($dbc) == 1) {
+					echo "<p>The seed - $name - has been updated.</p>";
+				} else {
+					echo '<p class="error">The seed could not be updated due to a system error.</p>';
+					echo '<p>
+				'. mysqli_error($dbc) .'<br>Query: '. $q .'</p>';
+				}
 			} else {
-				echo '<p class="error">The seed could not be updated due to a system error.</p>';
-				echo '<p>'. mysqli_error($dbc) .'<br>Query: '. $q .'</p>';
+				foreach ($errors as $error) {
+					echo '<p class="error">'. $error .'</p>';
+				}
 			}
 		} elseif (isset($_POST['add']) && is_numeric($_POST['add'])) {
-			$name = $_POST['name'];
-			$blurb = $_POST['blurb'];
-			$desc = $_POST['desc'];
 
-			$q = "INSERT INTO seeds(seed_name, seed_blurb, seed_desc, image_uri) VALUES('$name', '$blurb', '$desc', 'addedtbd')";
-			$r = @mysqli_query($dbc, $q);
-			if (mysqli_affected_rows($dbc) == 1) {
-				echo "<p>The seed - $name - has been added.</p>";
+			$errors = [];
+
+			$name = '';
+			$blurb = '';
+			$desc = '';
+			$target_file = null;
+
+			if (isset($_POST['name'])) {
+				$name = $_POST['name'];
 			} else {
-				echo '<p class="error">The seed could not be added due to a system error.</p>';
-				echo '<p>'. mysqli_error($dbc) .'<br>Query: '. $q .'</p>';
+				$errors[] = "Seed name is required.";
+			}
+
+			if (isset($_POST['blurb'])) {
+				$blurb = $_POST['blurb'];
+			} else {
+				$errors[] = "Seed blurb is required.";
+			}
+			
+			if (isset($_POST['desc'])) {
+				$desc = $_POST['desc'];
+			} else {
+				$errors[] = "Seed description is required.";
+			}
+
+			if (isset($_FILES['upload']) && file_exists($_FILES['upload']['tmp_name'])) {
+				$target_dir = "../includes/media/";
+				$target_file = $target_dir . basename($_FILES["upload"]["name"]);
+				$uploadOk = 1;
+				$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+
+				// Check if image file is a actual image or fake image
+				if(isset($_POST["submit"])) {
+				$check = getimagesize($_FILES["upload"]["tmp_name"]);
+				if($check !== false) {
+					$uploadOk = 1;
+				} else {
+					$errors[] = "File is not an image.";
+					$uploadOk = 0;
+				}
+				}
+
+				$q = "SELECT * FROM seeds WHERE image_uri = '$target_file'";
+				$r = @mysqli_query($dbc, $q);
+				if (mysqli_num_rows($r) > 0) {
+					$errors[] = "Sorry, you are trying to replace a file with the same name that is in use by a different resource, please consider renaming this file to something different.";
+					$uploadOk = 0;
+				}
+
+				// Check file size
+				if ($_FILES["upload"]["size"] > 500000) {
+					$errors[] = "Sorry, your file is too large.";
+					$uploadOk = 0;
+				}
+
+				// Allow certain file formats
+				if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+				&& $imageFileType != "gif" ) {
+					$errors[] = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+					$uploadOk = 0;
+				}
+
+				// Check if $uploadOk is set to 0 by an error
+				if ($uploadOk == 0) {
+					$errors[] = "Sorry, your file was not uploaded.";
+				// if everything is ok, try to upload file
+				} else {
+					if (!move_uploaded_file($_FILES["upload"]["tmp_name"], $target_file)) {
+						$errors[] = "Sorry, there was an error uploading your file.";
+					}
+				}
+			}
+
+			if (!$errors) {
+				$q = "INSERT INTO seeds(seed_name, seed_blurb, seed_desc, image_uri) VALUES('$name', '$blurb', '$desc', '$target_file')";
+				$r = @mysqli_query($dbc, $q);
+				if (mysqli_affected_rows($dbc) == 1) {
+					echo "<p>The seed - $name - has been added.</p>";
+				} else {
+					echo '<p class="error">The seed could not be added due to a system error.</p>';
+					echo '<p>'. mysqli_error($dbc) .'<br>Query: '. $q .'</p>';
+				}
+			} else {
+				foreach ($errors as $error) {
+					echo '<p class="error">'. $error .'</p>';
+				}
 			}
 		}
 	}
@@ -203,27 +317,27 @@
 
 			<!-- Edit Modal -->
 			<div class="modal fade" id="staticBackdropEdit'. $row['seed_id'] .'" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-			<form method="post">
 			<div class="modal-dialog">
 				<div class="modal-content">
 				<div class="modal-header">
 					<h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Seed - '. $row['seed_name'] .'</h1>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
+				<form method="post" enctype="multipart/form-data">
 				<div class="modal-body">
 					<p>Name: <input type="text" name="name" value="'. (isset($row['seed_name']) ? $row['seed_name'] : null) .'"></p>
 					<p>Blurb: <input type="text" name="blurb" value="'. (isset($row['seed_blurb']) ? $row['seed_blurb'] : null) .'"></p>
 					<p>Description:</p> <textarea name="desc" rows="5" cols="40">'. (isset($row['seed_desc']) ? $row['seed_desc'] : null) .'</textarea>
-					<p>Image: <input type="file" name="image" id="image"></p>
+					<p>Image: <input type="file" name="upload"></p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 						<input type="submit" name="submit" value="CONFIRM" class="btn btn-primary">
 						<input type="hidden" name="edit" value='. $row['seed_id'] .'>
 				</div>
+				</form>
 				</div>
 			</div>
-			</form>
 			</div>
 		';
 
@@ -288,27 +402,27 @@
 
 			<!-- Add Modal -->
 			<div class="modal fade" id="staticBackdropAdd" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-			<form method="post">
 			<div class="modal-dialog">
 				<div class="modal-content">
 				<div class="modal-header">
 					<h1 class="modal-title fs-5" id="staticBackdropLabel">Add Seed</h1>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
-				<div class="modal-body">
-					<p>Name: <input type="text" name="name" value=""></p>
-					<p>Blurb: <input type="text" name="blurb" value=""></p>
-					<p>Description:</p> <textarea name="desc" rows="5" cols="40"></textarea>
-					<p>Image: To be added</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-						<input type="submit" name="submit" value="CONFIRM" class="btn btn-primary">
-						<input type="hidden" name="add" value=0>
-				</div>
+				<form method="post" enctype="multipart/form-data">
+					<div class="modal-body">
+						<p>Name: <input type="text" name="name" value=""></p>
+						<p>Blurb: <input type="text" name="blurb" value=""></p>
+						<p>Description:</p> <textarea name="desc" rows="5" cols="40"></textarea>
+						<p>Image: <input type="file" name="upload"></p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							<input type="submit" name="submit" value="CONFIRM" class="btn btn-primary">
+							<input type="hidden" name="add" value=0>
+					</div>
+				</form>
 				</div>
 			</div>
-			</form>
 			</div>
 		';
 ?>

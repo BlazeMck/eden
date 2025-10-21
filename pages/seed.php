@@ -22,11 +22,18 @@
 </head>
 <body>
 	<?php
+        $src = '';
+        if (file_exists($seed['image_uri'])) {
+            $src = $seed['image_uri'];
+        } else {
+            $src = '../includes/media/sprout.jpg';
+        }
+
 		echo '<h1>'. $seed['seed_name'] .' Seed</h1>';
 		echo '
 		<div class="d-flex flex-row my-5">
 			<div style="width: 500px; height: 500px;">
-				<image src="../includes/media/cornucopia-temp-DONOTPUBLISH.jpg" class="w-100 h-100">
+				<image src="'. $src .'" class="w-100 h-100">
 			</div>
 			<div class="d-flex flex-column align-items-end border px-4" style="margin-left: 80px; width: 300px;">
 				<h2>'. $seed['seed_name'] .'</h2>
