@@ -1,7 +1,39 @@
 <?php
 	$page_title = 'User Page';
+	require_once('../util/mysqli_connect.php');
+
+	if (isset($_POST['delete'])) {
+		try {
+			$q = "DELETE FROM addresses WHERE user_id = $id";
+			$r = @mysqli_query($dbc, $q);
+			
+			$q = "DELETE FROM carts WHERE user_id = $id";
+			$r = @mysqli_query($dbc, $q);
+
+			$q = "UPDATE orders SET customer_id = NULL WHERE customer_id = $id";
+			$r = @mysqli_query($dbc, $q);
+
+			$q = "DELETE FROM users WHERE user_id = $id";
+			$r = @mysqli_query($dbc, $q);
+
+			$first_name = $_SESSION['first_name'];
+			$_SESSION = [];
+			session_destroy();
+			setcookie('PHPSESSID', '', time()-3600, '/', '', 0, 0);
+
+			echo '<h3>The user for '. $first_name .' has been successfully deleted. We hope to see you again!</h3>';
+		} catch (Exception $e) {
+			echo '<p class="error">Failed to delete user due to system error, please contact system administrator.</p>';
+			echo '<p>The process threw the following exception: '. $e->getMessage() .'</p>';
+		}
+		include('../includes/footer.html');
+		exit();
+
+	}
+	
 	include('../includes/header.html');
 	require_once('../util/constants.php');
+	
 
 	if (!isset($_SESSION['user_id'])) {
 		echo '<p class="error">This page has been accessed in error. Please login.</p>';
@@ -15,7 +47,7 @@
 
 	switch($list) {
 		case 's':
-			require_once('../util/mysqli_connect.php');
+			
 
 			$q = "SELECT * FROM users WHERE user_id = $id";
 			$r = @mysqli_query($dbc, $q);
@@ -102,8 +134,8 @@
 			break;
 		case 'i':
 			
+			$feedback = [];
 			if (isset($_POST['submit'])) {
-				$feedback = [];
 
 				if (empty($_POST['line_1'])) {
 					$feedback[] = '<p class="error">Missing Street Address.</p>';
@@ -199,7 +231,6 @@
 			}
 			break;
 		case 'd':
-			$content = '';
 			break;
 		default:
 			break;
@@ -214,10 +245,29 @@
 			<a href="../pages/user.php?list=s" class="list-group-item list-group-item-action"><h4>Settings</h4></a>
 			<a href="../pages/user.php?list=i" class="list-group-item list-group-item-action"><h4>Personal Info</h4></a>
 			<a href="../pages/orders.php" class="list-group-item list-group-item-action"><h4>Past Orders</h4></a>
-			<a href="../pages/user.php?list=d" class="list-group-item list-group-item-action"><h4>Delete Account</h4></a>
+			<a data-bs-toggle="modal" data-bs-target="#exampleModal" class="list-group-item list-group-item-action stretched-link"><h4>Delete Account</h4></a>
 		</div>
 		<div class="content border" style="margin-left: 100px; padding-top: 20px; padding-bottom: 50px; padding-left: 40px; padding-right: 120px; max-width: 400px;">
 		<?php echo $content ?>
+		</div>
+	</div>
+	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="exampleModalLabel">Are You Sure?</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					Are you sure you'd like to delete your account? After you delete it you will not be able to recover it and any data associated with it will be lost.
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<form method="post">
+						<input type="submit" class="btn btn-danger" name="delete" value="DELETE ACCOUNT">
+					</form>
+				</div>
+			</div>
 		</div>
 	</div>
 <?php

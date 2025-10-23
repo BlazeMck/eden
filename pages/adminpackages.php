@@ -1,9 +1,6 @@
 <?php
 	$page_title = 'Admin Packages';
 	include('../includes/header.html');
-	require_once('../util/keys.php');
-    require_once '../vendor/autoload.php';
-    $stripe = new \Stripe\StripeClient($S_SECRET);
 ?>
 </head>
 <body>

@@ -1,49 +1,92 @@
 <?php
-	$page_title = 'Packages';
-	include('../includes/header.html');
+    if (isset($_GET['id'])) {
+        $id = $_GET['id'];
+    } else {
+        header("Location: ../pages/orders.php");
+    }
+
+    require_once('../util/mysqli_connect.php');
+
+    $q = "SELECT * FROM orders WHERE order_id = $id";
+    $r = @mysqli_query($dbc, $q);
+    $order = mysqli_fetch_array($r, MYSQLI_ASSOC);
+
+    
+
+    $page_title = "Order Details";
+    include('../includes/header.html');
+    
+    if ((isset($_SESSION['user_id']) && $order['customer_id'] == $_SESSION['user_id']) || (isset($_SESSION['user_id']) && $_SESSION['user_level'] == 0)){
+    } else {
+        echo '</head><body><p class="error">This page has been accessed in error.</p>';
+		include('../includes/footer.html');
+		exit();
+    }
 ?>
 </head>
 <body>
-	<h1>Packages</h1>
-	<div class="container text-center" style="max-width: 1200">
-		<?php 
-			require_once('../util/mysqli_connect.php');
+    <?php
+        echo "<h1>Order Details - Order #$id</h1>";
 
-			$q = "SELECT * FROM packages";
-			$r = @mysqli_query($dbc, $q);
-			$num = 0;
-			while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
+        $q = "SELECT o.customer_id AS id, o.delivery_address AS ad, 
+                    o.delivery_city AS city, o.delivery_state AS st, 
+                    o.delivery_zip AS zip, o.email AS oemail, u.email AS uemail, u.first_name, u.last_name, u.phone FROM orders AS o
+                    JOIN users AS u ON o.customer_id = u.user_id WHERE order_id = $id";
+        $r = @mysqli_query($dbc, $q);
+        $details = mysqli_fetch_array($r, MYSQLI_ASSOC);
+;
+        $custinfo = '';
+        if (isset($details['id'])) {
+            $custinfo .= '<p>Placed By: '. $details['first_name'] .' '. $details['last_name'] .'
+                            <br>Email: '. $details['uemail'] .'
+                            <br>Phone: '. $details['phone'] .'</p>
+                            <h3 class="border-bottom">Shipping Details:</h3>
+                            <p>'. $details['ad'] .' '. $details['city'] .', '. $details['st'] .' '. $details['zip'] .'</p>';
+        } else {
+            $custinfo .= 'Placed By: Guest Account
+                          <br>Email: '. (!isset($details['oemail']) ? "No Email Found" : $details["oemail"]) .'</p>
+                          <h3 class="border-bottom">Shipping Details:</h3>
+                          <p>All shipping details can be found within the Email sent to the Email address provided at time of checkout. If you require additional assistance in regards to your order, please contact a system administrator.</p>';     
+        }
 
-				$src = '';
-				if (file_exists($row['image_uri'])) {
-					$src = $row['image_uri'];
-				} else {
-					$src = "../includes/media/cornucopia-temp-DONOTPUBLISH.jpg";
-				}
-				
-				if ($num % 4 == 0) {
-					echo '<div class="row">';
-				}
-				echo '
-					<div class="col border p-1" style="background-color: white; max-width: 250px; margin-left: 50px; margin-top: 25px;" onclick="location.href=\'package.php?id='. $row['package_id'] .'\'">
-						<image src="'. $src .'" style="margin-bottom: 5px;">
-						<p>'. $row['package_name'] .' - $'. $row['package_price'] .'</p>
-					</div>
-				';
-				if ($num % 4 == 3) {
-					echo '</div>';
-				}
-				$num++;
-			}
+        echo '
+        <div class="d-flex flex-direction-row">
+        <div class="border p-2" style="width: 45%; max-width: 45%;">
+            <h3 class="border-bottom">Customer Details:</h3>
+             '. $custinfo .'
+        </div>
+        <div class="border p-2">
+            <h3 class="border-bottom">Order Contents:</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Quantity</th>
+                            <th></th>
+                            <th>Product Name</th>
+                            <th></th>
+                            <th>Product Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            ';
 
-			if ($num %4 != 0) {
-				echo '
-					<div class="flex col border p-1 align-content-center" style="background-color: gray; max-width: 250px; height: 280px; margin-left: 50px; margin-top: 25px;">
-						<h3>MORE PACKAGES COMING SOON</h3>
-					</div>';
-			}
-		?>
-	</div>
+
+            $q = "SELECT p.package_name, p.image_uri, p.package_price, p.package_id, o.package_qty FROM order_details AS o JOIN packages AS p ON o.package_id = p.package_id WHERE order_id=$id";
+            $r = @mysqli_query($dbc, $q);
+            while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
+                echo '
+                    <tr>
+                        <td>'. $row['package_qty'] .'X</td>
+                        <td><image src="'. $row['image_uri'] .'" width=50 height=50></td>
+                        <td><a href="../pages/package.php?id='. $row['package_id'] .'">'. $row['package_name'] .'</a></td>
+                        <td>@</td>
+                        <td>$'. number_format($row['package_price'], 2) .'</td>
+                        <td>$'. number_format($row['package_price'] * $row['package_qty'], 2) .'</td>
+                    </tr>';
+            }
+        echo '</tbody></table></div></div>'
+    ?>
 <?php
-	include('../includes/footer.html');
+    include('../includes/footer.html');
 ?>

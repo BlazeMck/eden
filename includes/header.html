@@ -30,7 +30,7 @@
 					<?php
 					require_once('../util/mysqli_connect.php');
 					echo '<div class="d-flex flex-column">
-						<li><a class="dropdown-item" href="../pages/order.php"><strong>Packaged Seeds</strong></a></li>
+						<li><a class="dropdown-item" href="../pages/packages.php"><strong>Packaged Seeds</strong></a></li>
 						<div class="d-flex flex-column" style="flex-wrap: wrap; max-height: 300px;">';
 						$q = "SELECT package_name, package_id FROM packages";
 						$r = @mysqli_query($dbc, $q);
