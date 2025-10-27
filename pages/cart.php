@@ -51,11 +51,6 @@
 		if ($cart) {
 			require_once('../util/mysqli_connect.php');
 
-			
-			
-
-			
-
 			$filter = '';
 			$num = 1;
 			foreach ($cart as $id => $item) {

@@ -31,10 +31,10 @@
         $q = "SELECT o.customer_id AS id, o.delivery_address AS ad, 
                     o.delivery_city AS city, o.delivery_state AS st, 
                     o.delivery_zip AS zip, o.email AS oemail, u.email AS uemail, u.first_name, u.last_name, u.phone FROM orders AS o
-                    JOIN users AS u ON o.customer_id = u.user_id WHERE order_id = $id";
+                    LEFT JOIN users AS u ON o.customer_id = u.user_id WHERE o.order_id = $id";
         $r = @mysqli_query($dbc, $q);
         $details = mysqli_fetch_array($r, MYSQLI_ASSOC);
-;
+
         $custinfo = '';
         if (isset($details['id'])) {
             $custinfo .= '<p>Placed By: '. $details['first_name'] .' '. $details['last_name'] .'
@@ -44,9 +44,12 @@
                             <p>'. $details['ad'] .' '. $details['city'] .', '. $details['st'] .' '. $details['zip'] .'</p>';
         } else {
             $custinfo .= 'Placed By: Guest Account
-                          <br>Email: '. (!isset($details['oemail']) ? "No Email Found" : $details["oemail"]) .'</p>
-                          <h3 class="border-bottom">Shipping Details:</h3>
-                          <p>All shipping details can be found within the Email sent to the Email address provided at time of checkout. If you require additional assistance in regards to your order, please contact a system administrator.</p>';     
+                          <h3 class="border-bottom">Shipping Details:</h3>';
+                if ($_SESSION['user_level'] == 0) {
+                    $custinfo .= '<p>'. $details['ad'] .' '. $details['city'] .', '. $details['st'] .' '. $details['zip'] .'</p>';
+                } else {
+                    $custinfo .= '<p>All shipping details can be found within the Email sent to the Email address provided at time of checkout. If you require additional assistance in regards to your order, please contact a system administrator.</p>';  
+                }   
         }
 
         echo '
