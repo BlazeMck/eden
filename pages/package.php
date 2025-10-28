@@ -21,7 +21,7 @@
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['quantity']) && is_numeric($_POST['quantity'])) {
         $qty = $_POST['quantity'];
-        if (isset($_SESSION['user_id'])) {
+        if (isset($_SESSION['cart'])) {
                 if (isset($_SESSION['cart'][$id])) {
                     $_SESSION['cart'][$id] += $qty;
                 } else {
@@ -31,7 +31,8 @@
                     $_SESSION['cart'][$id] = 10;
                 }
         } else {
-            $cartCookie = json_decode($_COOKIE['cart']);
+            
+            $cartCookie = empty($_COOKIE['cart']) ? null : json_decode($_COOKIE['cart']);
             if (isset($cartCookie[$id])) {
                 $cartCookie[$id] += $qty;
             } else {
@@ -69,21 +70,6 @@
                     <p>Quantity: <input type="number" name="quantity" step=1 size=3 value=1 min=1 max=10></p>
                     <input type="submit" value="Add To Cart" class="btn btn-success w-100">
                 </form>';
-                if (isset($_SESSION['cart'])) {
-                    echo '<p>The user cart has: ';
-                    foreach($_SESSION['cart'] as $id => $qty) {
-                        echo '<br>'. $id .' - #'. $qty .' ';
-                    }
-                    echo '</p>';
-                } else if (isset($_COOKIE['cart'])) {
-                    echo '<p>The guest cart has: ';
-                    $cartCookie = json_decode($_COOKIE['cart']);
-                    foreach($cartCookie as $id => $qty) {
-                        echo $id .' - #'. $qty .' ';
-                    }
-                    print_r($_COOKIE['cart']);
-                    echo '</p>';
-                }
         echo '
             </div>
         </div>

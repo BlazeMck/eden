@@ -9,9 +9,15 @@
 		<div class="p-2 me-auto">
 	<?php 
 		$cart = null;
-		if (isset($_SESSION['cart'])) {
+
+
+		if (isset($_COOKIE['cart'])) {
+			print "Cart cookie is set.";
+			print json_decode($_COOKIE['cart']);
+		}
+		if (!empty($_SESSION['cart'])) {
 			$cart = $_SESSION['cart'];
-		} elseif (isset($_COOKIE['cart'])) {
+		} elseif (!empty($_COOKIE['cart'])) {
 			$cart = json_decode($_COOKIE['cart']);
 		}
 

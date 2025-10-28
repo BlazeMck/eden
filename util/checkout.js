@@ -1,3 +1,4 @@
+console.log('This should print...');
 const methodCr = document.getElementById('cr');
 const methodGi = document.getElementById('gi');
 const same = document.getElementById('same');
@@ -6,6 +7,7 @@ const shipping = document.getElementById('shipping').childNodes[7];
 const cardInfo = document.getElementById('cardInfo').childNodes[7];
 const form = document.getElementById('form');
 const submit = document.getElementById('submit');
+const email
 
 const shippingArr = [shipping.childNodes['3'], shipping.childNodes['8'], shipping.childNodes['13'], shipping.childNodes['18'], shipping.childNodes['20']];
 const billingArr = [billing.childNodes['3'], billing.childNodes['8'], billing.childNodes['13'], billing.childNodes['18'], billing.childNodes['20']];
@@ -13,6 +15,8 @@ const cardArr = [cardInfo.childNodes['3'], cardInfo.childNodes['8'], cardInfo.ch
 const states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
 
 const inputArr = [shippingArr, billingArr, cardArr];
+
+
 
 methodGi.addEventListener('change', changeMethod);
 methodCr.addEventListener('change', changeMethod);
@@ -46,9 +50,14 @@ function sameAddressChange(element) {
     }
 }
 
-form.addEventListener('input', validateInput);
+inputArr.forEach(array => {
+    array.forEach(element => {
+        element.addEventListener('focusout', validateInput);
+    });
+});
 
 function validateInput(element) {
+
     const eleName = element.target.name;
     const eleValue = element.target.value;
 
@@ -90,6 +99,8 @@ function validateInput(element) {
         case 'ship_zip':
             regExp = /^\d{5}(-\d{4})?/;
             break;
+        case 'email':
+            regExp = 
         default:
             break;
     }
@@ -100,11 +111,36 @@ function validateInput(element) {
         } else {
             element.target.classList.add('invalid');
         }
-    } else {
+    } else if (eleName == 'bill_state' || eleName == 'ship_state'){
         if (states.includes(eleValue)) {
             element.target.classList.remove('invalid');
         } else {
             element.target.classList.add('invalid');
         }
+    }
+}
+
+form.addEventListener('change', validateForm) 
+
+function validateForm() {
+    var invalid = false;
+
+    inputArr.forEach(array => {
+        array.forEach(element => {
+            if (element.name == 'bill_line_2' || element.name == 'ship_line_2') {
+                if (element.classList.contains('invalid')) {
+                    invalid = true;
+                    console.log(`invalid input: ${element.name}`);
+                }
+            }
+            else if (element.classList.contains('invalid') || element.value == '' ) {
+                invalid = true;
+                console.log(`invalid input: ${element.name}`)
+            }
+        });
+    });
+
+    if (!invalid) {
+        submit.removeAttribute('disabled');
     }
 }

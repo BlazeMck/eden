@@ -13,14 +13,29 @@
 <body>
     <?php
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+            $l1 = $_POST['ship_line_1'];
+            $l2 = $_POST['ship_line_2'];
+            $city = $_POST['ship_city'];
+            $zip = $_POST['ship_zip'];
+            $state = $_POST['ship_state'];
+
+            if($_POST['save'] == 'yes' && isset($_SESSION['user_id'])) {
+                $q = "UPDATE addresses SET line_1 = $l1, line_2 = $l2, city = $city, zip = $zip, state = $state WHERE user_id = $id";
+                $r = @mysqli_query($dbc, $q);
+                if (mysqli_affected_rows($dbc) == 1) {
+                    print "Address successfully changed.";
+                }
+            }
             
+            $q = "INSERT INTO orders(customer_id, subtotal, delivery_address, delivery_city, delivery_zip, order_date, email)";
         }
     ?>
     <h1>Checkout</h1>
     <form method="post" id="form">
         <div class="d-flex flex-direction-row" style="margin-top: 60px;">
             <div class="border p-2 mx-auto d-flex flex-direction-row" style="scale: 120%; width: 35%">
-                <div>
+                <div style="width: 50%;">
                     <div id="cardInfo">
                         <h4>Payment Method:</h4>
                         <p>Credit Card: <input type="radio" name="method" value="cr" id="cr" checked> &nbsp;&nbsp; Gift Card: <input type="radio" name="method" value="gi" id="gi"></p>
@@ -36,7 +51,7 @@
                     <div id="billing">
                         <h4>Billing Address:</h4>
                             <?php
-                            $id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+                            $id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0;
                             $q = "SELECT * FROM addresses WHERE user_id = $id";
                             $r = @mysqli_query($dbc, $q);
                             if (mysqli_num_rows($r) == 1) {
@@ -63,11 +78,11 @@
                             ?>
                     </div>
                 </div>
-                <div class="ms-3">
+                <div class="ms-3" style="width: 50%;">
                     <div id="shipping">
                         <h4>Shipping Address:</h4>
                         <p style="text-align: right;">Billing Same As Shipping? <input type="checkbox" name="same" value="yes" id="same"></p>
-                        <p style="text-align: right;">Set Address As Default? <input type="checkbox" name="save" value="yes" checked id="save"></p>
+                        <p style="text-align: right;">Set Address As Default? <input type="checkbox" name="save" value="yes" id="save" <?php if(!isset($_SESSION['user_id'])) {echo 'disabled';} ?>></p>
                         <?php
                         echo '
                             <p>Street Address Line 1:<br>
@@ -88,6 +103,9 @@
                                 </p>';
                         ?>
                     </div>
+                    <p>Email: 
+                    <input type="email" id="email" value="<?php isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>" required>
+                    </p>
                     <input type="submit" id="submit" class="btn btn-success w-100" value="Place Order" disabled>
                 </div>
             </div>
@@ -153,28 +171,6 @@
 						<td class="num"><p>'. $cart[$id] .'</p></td>
 						<td class="num"><p>$'. number_format($total, 2) .'</p></td>
 					</tr>';
-				
-				echo '
-				<div class="modal fade" id="staticBackdrop'. $id .'" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-					<div class="modal-dialog">
-						<div class="modal-content">
-						<div class="modal-header">
-							<h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Cart Item</h1>
-							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-						</div>
-						<form method="post">
-						<div class="modal-body">
-							<p>Change quantity: <input type="number" step="1" name="qty" value="'. $qty .'" max="10" style="max-width: 50px;"></p>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-							<input type="hidden" name="id" value="'. $id .'">
-							<input type="submit" class="btn btn-primary" value="Confirm"></button>
-						</div>
-						</form>
-						</div>
-					</div>
-				</div>';
 			}
             $ship = 9.99;
             $rate = 0.0485;
