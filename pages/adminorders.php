@@ -16,6 +16,7 @@
 </head>
 <body>
 	<h1>All Orders - Admin List</h1>
+	<div class="d-flex align-items-center flex-column">
 	<form method="post" action>
 		<div class="input-group">
 			<span class="input-group-text" id="basic-addon1">Order # -</span>
@@ -141,8 +142,32 @@
 
 			mysqli_free_result($r);
 			mysqli_close($dbc);
+
+			if ($pages > 1) {
+
+				$current_page = ($start/$display) + 1;
+
+				echo '<div class="d-flex">';
+				if ($current_page != 1) {
+					echo '<a href="adminorders.php?s='. ($start - $display) .'&p='. $pages .'&sort='. $sort .'" class="btn btn-secondary">Previous</a> ';
+				}
+
+				for ($i = ($current_page - 2 < 1 ? 1 : $current_page - 2); $i <= ($current_page + 2 > $pages ? $pages : $current_page + 2); $i++) {
+					if ($i != $current_page) {
+						echo '<a href="adminorders.php?s='. (($display*($i-1))) .'&p='. $pages .'&sort='. $sort .'" class="btn btn-secondary">'. $i .'</a> ';
+					} else {
+						echo '<span class="btn btn-primary">'.$i .'</span>';
+					}
+				}
+
+				if ($current_page != $pages) {
+					echo '<a href="adminorders.php?s='. ($start + $display) .'&p='. $pages .'$sort='. $sort .'" class="btn btn-secondary">Next</a>';
+				}
+				echo '</div>';
+			}
 		}
 	?>
+	</div>
 <?php
 	include('../includes/footer.html');
 ?>

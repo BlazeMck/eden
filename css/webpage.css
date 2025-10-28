@@ -1,0 +1,24 @@
+.container {
+    background-color: #c1c995;
+    min-height: 955px;
+    max-width: 1200px;
+}
+
+body {
+    background-image: url('../includes/media/background-tree.jpg');
+    background-repeat: no-repeat;
+    background-size: 150%, 150%;
+    background-position: center;
+}
+
+#package:hover {
+    background-color: #967458a2;
+    opacity: 80%;
+    cursor: pointer;
+}
+
+#seed:hover {
+    background-color: #967458a2;
+    opacity: 80%;
+    cursor: pointer;
+}

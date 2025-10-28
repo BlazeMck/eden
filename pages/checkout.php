@@ -2,11 +2,11 @@
 	$page_title = 'Checkout';
 	include('../includes/header.html');
     require_once('../util/keys.php');
-    require_once('../vendor/autoload.php');
+    // require_once('../vendor/autoload.php');
     require_once('../util/mysqli_connect.php');
     require_once('../util/constants.php');
     
-    $stripe = new \Stripe\StripeClient($S_SECRET);
+    // $stripe = new \Stripe\StripeClient($S_SECRET);
     
 ?>
 </head>
@@ -106,7 +106,7 @@
 
 
 
-                       $filter = '';
+            $filter = '';
 			$num = 1;
 			foreach ($cart as $id => $item) {
 				$filter .= "package_id = $id";

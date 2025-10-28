@@ -70,7 +70,8 @@
 			$r = @mysqli_query($dbc, $q);	
 			$rc = mysqli_num_rows($r);
 
-			echo '<h1>Orders - '. $_SESSION['first_name'] .'</h1>';
+			echo '<h1>Orders - '. $_SESSION['first_name'] .'</h1>
+				<div class="d-flex align-items-center flex-column">';
 			if ($rc != 0){
 				echo '
 					<table width="80%" class="left">
@@ -121,6 +122,7 @@
 						echo '<a href="orders.php?s='. ($start + $display) .'&p='. $pages .'$sort='. $sort .'">Next</a>';
 					}
 					
+					echo '</div>';
 				}
 			} else {
 				echo '<h3>You have not placed any orders.</h3>';
@@ -128,13 +130,13 @@
 		} else {
 			echo '<h1>Orders - Order Lookup</h1>
 				  	<form method="post" action>
-						<div class="input-group">
+						<div class="input-group d-flex justify-content-center">
 							<span class="input-group-text" id="basic-addon1">Order # -</span>
 							<input class="" type="search" placeholder="Search" aria-label="Search" name="search" size="90"/>
-			  				<button class="btn btn-outline-success" type="submit">Search</button>
+			  				<button class="btn btn-outline-success" style="background-color: aliceblue;" type="submit">Search</button>
 						</div>
 					</form>';
 		}
-	
+		
 		include('../includes/footer.html');
 	?>

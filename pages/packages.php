@@ -5,7 +5,8 @@
 </head>
 <body>
 	<h1>Packages</h1>
-	<div class="container text-center" style="max-width: 1200">
+	<div class="text-center d-flex align-items-center">
+		<div class="d-flex flex-wrap mx-auto">
 		<?php 
 			require_once('../util/mysqli_connect.php');
 
@@ -20,30 +21,22 @@
 				} else {
 					$src = "../includes/media/cornucopia-temp-DONOTPUBLISH.jpg";
 				}
-				
-				if ($num % 4 == 0) {
-					echo '<div class="row">';
-				}
 				echo '
-					<div class="col border p-1" style="background-color: white; max-width: 250px; margin-left: 50px; margin-top: 25px;" onclick="location.href=\'package.php?id='. $row['package_id'] .'\'">
+					<div class="col border p-1 mx-4" id="package" style="background-color: white; max-width: 250px; margin-top: 25px;" onclick="location.href=\'package.php?id='. $row['package_id'] .'\'">
 						<image src="'. $src .'" style="margin-bottom: 5px;">
 						<p>'. $row['package_name'] .' - $'. $row['package_price'] .'</p>
 					</div>
 				';
-				if ($num % 4 == 3) {
-					echo '</div>';
-				}
-				$num++;
 			}
 
-			if ($num %4 != 0) {
 				echo '
-					<div class="flex col border p-1 align-content-center" style="background-color: gray; max-width: 250px; height: 280px; margin-left: 50px; margin-top: 25px;">
+					<div class="flex col border p-1 align-content-center mx-4" style="background-color: gray; max-width: 250px; height: 280px; margin-top: 25px;">
 						<h3>MORE PACKAGES COMING SOON</h3>
 					</div>';
-			}
 		?>
+		</div>
 	</div>
+</div>
 <?php
 	include('../includes/footer.html');
 ?>

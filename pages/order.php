@@ -16,7 +16,7 @@
     $page_title = "Order Details";
     include('../includes/header.html');
     
-    if ((isset($_SESSION['user_id']) && $order['customer_id'] == $_SESSION['user_id']) || (isset($_SESSION['user_id']) && $_SESSION['user_level'] == 0)){
+    if (((isset($_SESSION['user_id']) && $order['customer_id'] == $_SESSION['user_id']) || (is_null($order['customer_id']))) || (isset($_SESSION['user_id']) && $_SESSION['user_level'] == 0)){
     } else {
         echo '</head><body><p class="error">This page has been accessed in error.</p>';
 		include('../includes/footer.html');
@@ -45,7 +45,7 @@
         } else {
             $custinfo .= 'Placed By: Guest Account
                           <h3 class="border-bottom">Shipping Details:</h3>';
-                if ($_SESSION['user_level'] == 0) {
+                if (!empty($_SESSION['user_level']) &&$_SESSION['user_level'] == 0) {
                     $custinfo .= '<p>'. $details['ad'] .' '. $details['city'] .', '. $details['st'] .' '. $details['zip'] .'</p>';
                 } else {
                     $custinfo .= '<p>All shipping details can be found within the Email sent to the Email address provided at time of checkout. If you require additional assistance in regards to your order, please contact a system administrator.</p>';  
@@ -53,7 +53,7 @@
         }
 
         echo '
-        <div class="d-flex flex-direction-row">
+        <div class="d-flex flex-direction-row justify-content-center">
         <div class="border p-2" style="width: 45%; max-width: 45%;">
             <h3 class="border-bottom">Customer Details:</h3>
              '. $custinfo .'
