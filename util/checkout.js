@@ -7,9 +7,9 @@ const shipping = document.getElementById('shipping').childNodes[7];
 const cardInfo = document.getElementById('cardInfo').childNodes[7];
 const form = document.getElementById('form');
 const submit = document.getElementById('submit');
-const email
+const email = document.getElementById('email');
 
-const shippingArr = [shipping.childNodes['3'], shipping.childNodes['8'], shipping.childNodes['13'], shipping.childNodes['18'], shipping.childNodes['20']];
+const shippingArr = [shipping.childNodes['3'], shipping.childNodes['8'], shipping.childNodes['13'], shipping.childNodes['18'], shipping.childNodes['20'], email];
 const billingArr = [billing.childNodes['3'], billing.childNodes['8'], billing.childNodes['13'], billing.childNodes['18'], billing.childNodes['20']];
 const cardArr = [cardInfo.childNodes['3'], cardInfo.childNodes['8'], cardInfo.childNodes['10'], cardInfo.childNodes['15']];
 const states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
@@ -57,9 +57,10 @@ inputArr.forEach(array => {
 });
 
 function validateInput(element) {
-
     const eleName = element.target.name;
     const eleValue = element.target.value;
+
+    console.log(`${eleName} - ${eleValue}`);
 
     var regExp = null;
     switch (eleName) {
@@ -100,10 +101,14 @@ function validateInput(element) {
             regExp = /^\d{5}(-\d{4})?/;
             break;
         case 'email':
-            regExp = 
+            regExp = /\b[\w.-]+@[\w.-]+\.[A-Za-z]{2,6}\b/;
+            break;
         default:
             break;
     }
+
+    console.log(regExp);
+    console.log(eleValue.search(regExp));
 
     if (regExp) {
         if (!eleValue.search(regExp)) {
@@ -142,5 +147,7 @@ function validateForm() {
 
     if (!invalid) {
         submit.removeAttribute('disabled');
+    } else {
+        submit.setAttribute('disabled');
     }
 }

@@ -12,27 +12,10 @@
 </head>
 <body>
     <?php
-        if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            $id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-            $l1 = $_POST['ship_line_1'];
-            $l2 = $_POST['ship_line_2'];
-            $city = $_POST['ship_city'];
-            $zip = $_POST['ship_zip'];
-            $state = $_POST['ship_state'];
-
-            if($_POST['save'] == 'yes' && isset($_SESSION['user_id'])) {
-                $q = "UPDATE addresses SET line_1 = $l1, line_2 = $l2, city = $city, zip = $zip, state = $state WHERE user_id = $id";
-                $r = @mysqli_query($dbc, $q);
-                if (mysqli_affected_rows($dbc) == 1) {
-                    print "Address successfully changed.";
-                }
-            }
-            
-            $q = "INSERT INTO orders(customer_id, subtotal, delivery_address, delivery_city, delivery_zip, order_date, email)";
-        }
+        
     ?>
     <h1>Checkout</h1>
-    <form method="post" id="form">
+    <form method="post" id="form" action="../pages/complete.php">
         <div class="d-flex flex-direction-row" style="margin-top: 60px;">
             <div class="border p-2 mx-auto d-flex flex-direction-row" style="scale: 120%; width: 35%">
                 <div style="width: 50%;">
@@ -104,7 +87,7 @@
                         ?>
                     </div>
                     <p>Email: 
-                    <input type="email" id="email" value="<?php isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>" required>
+                    <input type="email" id="email" name="email" value="<?php isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>" required>
                     </p>
                     <input type="submit" id="submit" class="btn btn-success w-100" value="Place Order" disabled>
                 </div>
@@ -209,6 +192,7 @@
                 </tr>
 			</tbody>
 			</table>
+            <input type="hidden" name="subtotal" value='. $subTotal .'>
             <input type="hidden" name="total" value='. $allTotal .'>
 			</div>';
                     ?>
