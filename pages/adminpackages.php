@@ -271,7 +271,7 @@
 				}
 			} else {
 				foreach ($errors as $error) {
-					echo '<p class="error">'. $error .'</p>';
+					echo '<p class="error-md">'. $error .'</p>';
 				}
 			}
 		}
@@ -283,11 +283,10 @@
 
 	} else {
 
-		$q = "SELECT COUNT(seed_id) FROM seeds";
+		$q = "SELECT COUNT(package_id) FROM packages";
 		$r = @mysqli_query($dbc, $q);
 		$row = @mysqli_fetch_array($r, MYSQLI_NUM);
 		$records = $row[0];
-
 		if ($records > $display) {
 			$pages = ceil ($records/$display);
 		} else {
@@ -455,30 +454,30 @@
 
 	echo '<br><p>';
 	if ($pages > 1) {
-		
 
 		$current_page = ($start/$display) + 1;
 
+		echo '<div class="d-flex">';
 		if ($current_page != 1) {
-			echo '<a href="adminpackages.php?s='. ($start - $display) .'&p='. $pages .'&sort='. $sort .'">Previous</a> ';
+			echo '<a href="adminpackages.php?s='. ($start - $display) .'&p='. $pages .'&sort='. $sort .'" class="btn btn-secondary">Previous</a> ';
 		}
 
-		for ($i = 1; $i <= $pages; $i++) {
+		for ($i = ($current_page - 2 < 1 ? 1 : $current_page - 2); $i <= ($current_page + 2 > $pages ? $pages : $current_page + 2); $i++) {
 			if ($i != $current_page) {
-				echo '<a href="adminpackages.php?s='. (($display*($i-1))) .'&p='. $pages .'&sort='. $sort .'">'. $i .'</a> ';
+				echo '<a href="adminpackages.php?s='. (($display*($i-1))) .'&p='. $pages .'&sort='. $sort .'" class="btn btn-secondary">'. $i .'</a> ';
 			} else {
-				echo $i .' ';
+				echo '<span class="btn btn-primary">'.$i .'</span>';
 			}
 		}
 
 		if ($current_page != $pages) {
-			echo '<a href="adminpackages.php?s='. ($start + $display) .'&p='. $pages .'$sort='. $sort .'">Next</a>';
+			echo '<a href="adminpackages.php?s='. ($start + $display) .'&p='. $pages .'$sort='. $sort .'" class="btn btn-secondary">Next</a>';
 		}
-		
+		echo '</div>';
 	}
 	echo '</p>';
 	echo '
-			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropAdd">Add New Package</button>
+			<button type="button" class="btn btn-primary my-2" data-bs-toggle="modal" data-bs-target="#staticBackdropAdd">Add New Package</button>
 
 			<!-- Add Modal -->
 			<div class="modal fade" id="staticBackdropAdd" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

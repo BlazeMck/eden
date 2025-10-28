@@ -14,13 +14,16 @@
             LIMIT 1";
         $r = mysqli_query($dbc, $q) or die("Query: $q\n<br>MySQL Error: " .mysqli_error($dbc));
 
+        echo '<div class="d-flex"><div class="my-5">';
+
         if (mysqli_affected_rows($dbc) == 1) {
-            echo "<h3>Your account is now active. You may now log in.</h3>";
+            echo '<h2  style="text-align: center;">Your account is now active. You may now log in.</h2>';
         }
         else {
             echo '<p class="error">Your account could not be activated. Please re-check the link or contact a system administrator.</p>';
         }
 
+        echo '</div></div></div>';
         mysqli_close($dbc);
     } else {
         $url = 'http://localhost/eden/pages/index.php';

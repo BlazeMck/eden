@@ -10,15 +10,8 @@
 	<?php 
 		$cart = null;
 
-
-		if (isset($_COOKIE['cart'])) {
-			print "Cart cookie is set.";
-			print json_decode($_COOKIE['cart']);
-		}
 		if (!empty($_SESSION['cart'])) {
 			$cart = $_SESSION['cart'];
-		} elseif (!empty($_COOKIE['cart'])) {
-			$cart = json_decode($_COOKIE['cart']);
 		}
 
 		if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -68,7 +61,9 @@
 			}
 
 			echo '
-				<table>
+			<div class="d-flex align-items-center justify-content-center">
+			<div class="d-flex justify-content-center flex-column">
+				<table class="table table-secondary table-hover align-middle table-lg">
 					<thead>
 						<tr>
 							<th></th>
@@ -149,7 +144,7 @@
 			</div>';
 		} else {
 			echo '<h3>Cart is currently empty.</h3>
-				</div>';
+				</div></div></div>';
 		}
 	?>
 	</div>

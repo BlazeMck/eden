@@ -72,16 +72,18 @@
 							$r = @mysqli_query($dbc, $q);
 							if (mysqli_affected_rows($dbc) != 0) {
 								$feedback[] = '<p>Password has been updated.</p>';
+							} else {
+								$feedback[] = '<p class="error-md">Current password does not match what is currently in system.</p>';
 							}
 						} else {
-							$feedback[] = '<p class="error">The two New Password fields must match.</p>';
+							$feedback[] = '<p class="error-md">The two New Password fields must match.</p>';
 						}
 					} else {
-						$feedback[] = '<p class="error">Neither of the two New Password fields can be empty</p>';
+						$feedback[] = '<p class="error-md">Neither of the two New Password fields can be empty</p>';
 					}
 					
 				} elseif (!empty($_POST['pass1']) || !empty($_POST['pass2'])) {
-					$feedback[] = '<p class="error">You must enter your current password to change passwords.</p>';
+					$feedback[] = '<p class="error-md">You must enter your current password to change passwords.</p>';
 				}
 				if (isset($_POST['email']) && $_POST['email'] != $user['email']) {
 					$epattern = '/\b[\w.-]+@[\w.-]+\.[A-Za-z]{2,6}\b/';
@@ -95,7 +97,7 @@
 						}
 						
 					} else {
-						$feedback[] = '<p class="error">The new email is not a real email.</p>';
+						$feedback[] = '<p class="error-md">The new email is not a real email.</p>';
 					}
 				}
 			}
@@ -138,39 +140,39 @@
 			if (isset($_POST['submit'])) {
 
 				if (empty($_POST['line_1'])) {
-					$feedback[] = '<p class="error">Missing Street Address.</p>';
+					$feedback[] = '<p class="error-md">Missing Street Address.</p>';
 				} elseif (!preg_match('/^\d+ [a-zA-Z]+ \d* ?[a-zA-Z]+/', $_POST['line_1'])) {
-					$feedback[] = '<p class="error">Please ensure the Street Address is properly formatted.</p>';
+					$feedback[] = '<p class="error-md">Please ensure the Street Address is properly formatted.</p>';
 				} else {
 					$l1 = mysqli_real_escape_string($dbc, $_POST['line_1']);
 					$l2 = null;
 					if (!empty($_POST['line_2']) && preg_match('/^[a-zA-Z#\d]{0,10}/', $_POST['line_2'])) {
 						$l2 = mysqli_real_escape_string($dbc, $_POST['line_2']);
 					} elseif(!empty($_POST['line_2'])) {
-						$feedback[] = '<p class="error">Please ensure the Unit Number in Address Line 2 is properly formatted.</p>';
+						$feedback[] = '<p class="error-md">Please ensure the Unit Number in Address Line 2 is properly formatted.</p>';
 					}
 				}
 
 				if (empty($_POST['city'])) {
-					$feedback[] = '<p class="error">Missing City.</p>';
+					$feedback[] = '<p class="error-md">Missing City.</p>';
 				} elseif (!preg_match('/^[a-zA-Z ]{1,50}/', $_POST['city'])) {
-					$feedback[] = '<p class="error">Please ensure the City is properly formatted.</p>';
+					$feedback[] = '<p class="error-md">Please ensure the City is properly formatted.</p>';
 				} else {
 					$c = mysqli_real_escape_string($dbc, $_POST['city']);
 				}
 
 				if (empty($_POST['zip'])) {
-					$feedback[] = '<p class="error">Missing Zip Code.</p>';
+					$feedback[] = '<p class="error-md">Missing Zip Code.</p>';
 				} elseif (!preg_match('/^\d{5}(-\d{4})?/', $_POST['zip'])) {
-					$feedback[] = '<p class="error">Please ensure the Zip Code is properly formatted.</p>';
+					$feedback[] = '<p class="error-md">Please ensure the Zip Code is properly formatted.</p>';
 				} else {
 					$z = mysqli_real_escape_string($dbc, $_POST['zip']);
 				}
 
 				if (empty($_POST['state'])) {
-					$feedback[] = '<p class="error">Missing State.</p>';
+					$feedback[] = '<p class="error-md">Missing State.</p>';
 				} elseif (!in_array($_POST['state'], $states)) {
-					$feedback[] = '<p class="error">Please ensure the State is properly formatted (XX Abbreviation).';
+					$feedback[] = '<p class="error-md">Please ensure the State is properly formatted (XX Abbreviation).';
 				} else {
 					$s = mysqli_real_escape_string($dbc, $_POST['city']);
 				}
@@ -186,7 +188,7 @@
 						if (mysqli_affected_rows($dbc) > 0) {
 							$feedback[] = '<p>Address successfully added.</p>';
 						} else {
-							$feedback[] = '<p class="error">Address could not be added, please contact system administrator.</p>';
+							$feedback[] = '<p class="error-md">Address could not be added, please contact system administrator.</p>';
 						}
 					} elseif ($rc == 1) {
 						$q = "UPDATE addresses SET line_1 = '$l1', line_2 = '$l2', city = '$c', zip = '$z', state = '$s' WHERE user_id = $id";
@@ -194,7 +196,7 @@
 						if (mysqli_affected_rows($dbc) > 0) {
 							$feedback[] = '<p>Address successfully updated.</p>';
 						} else {
-							$feedback[] = '<p class="error">Address could not be updated, please contact system administrator.</p>';
+							$feedback[] = '<p class="error-md">Address could not be updated, please contact system administrator.</p>';
 						}
 					}
 				}
@@ -209,7 +211,7 @@
 			Street Address Line 2:<br>
 			<input type="text"><br>
 			City<br>
-			<input type="text" name="city">
+			<input type="text" name="city"><br>
 			Zipcode &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp State<br>
 			<input type="text" size=10 name="zip"> <input list="states" style="width: 70px;" name="state">
 				<datalist id="states">
@@ -240,14 +242,14 @@
 </head>
 <body>
 	<h1><?php echo $_SESSION['first_name']; ?></h1>
-	<div class="d-flex flex-direction-row">
+	<div class="d-flex flex-direction-row mx-4 my-3" >
 		<div class="list-group">
 			<a href="../pages/user.php?list=s" class="list-group-item list-group-item-action"><h4>Settings</h4></a>
 			<a href="../pages/user.php?list=i" class="list-group-item list-group-item-action"><h4>Personal Info</h4></a>
 			<a href="../pages/orders.php" class="list-group-item list-group-item-action"><h4>Past Orders</h4></a>
-			<a data-bs-toggle="modal" data-bs-target="#exampleModal" class="list-group-item list-group-item-action stretched-link"><h4>Delete Account</h4></a>
+			<a data-bs-toggle="modal" data-bs-target="#exampleModal" class="list-group-item list-group-item-action stretched-link" style="cursor: pointer;"><h4>Delete Account</h4></a>
 		</div>
-		<div class="content border" style="margin-left: 100px; padding-top: 20px; padding-bottom: 50px; padding-left: 40px; padding-right: 120px; max-width: 400px;">
+		<div class="content border" style="margin-left: 100px; padding-top: 20px; padding-bottom: 50px; padding-left: 40px; padding-right: 40px; max-width: 400px;">
 		<?php echo $content ?>
 		</div>
 	</div>

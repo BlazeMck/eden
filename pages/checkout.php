@@ -6,13 +6,18 @@
     require_once('../util/mysqli_connect.php');
     require_once('../util/constants.php');
     
+
     // $stripe = new \Stripe\StripeClient($S_SECRET);
     
 ?>
 </head>
 <body>
     <?php
-        
+        if (empty($_SESSION['cart'])) {
+            echo '<br><br><p class="error">This page was accessed in error.</p>';
+            include('../includes/footer.html');
+            exit();
+        }
     ?>
     <h1>Checkout</h1>
     <form method="post" id="form" action="../pages/complete.php">

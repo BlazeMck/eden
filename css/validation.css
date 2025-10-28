@@ -12,3 +12,11 @@
     padding-left: 3rem;
     padding-right: 3rem;
 }
+.error-md {
+    color: red;
+    background-color: rgb(224, 168, 168);
+    text-align: center;
+    font-weight: bolder;
+    padding-left: 3rem;
+    padding-right: 3rem;
+}

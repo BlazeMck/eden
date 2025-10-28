@@ -34,7 +34,7 @@
             $email = mysqli_real_escape_string($dbc, $_POST['email']);
 
             if(isset($_POST['save']) && isset($_SESSION['user_id'])) {
-                $q = "UPDATE addresses SET line_1 = $l1, line_2 = $l2, city = $city, zip = $zip, state = $state WHERE user_id = $id";
+                $q = "UPDATE addresses SET line_1 = '$l1', line_2 = '$l2', city = '$city', zip = $zip, state = '$state' WHERE user_id = $id";
                 $r = @mysqli_query($dbc, $q);
                 if (mysqli_affected_rows($dbc) == 1) {
                 }

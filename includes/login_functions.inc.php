@@ -47,7 +47,6 @@ function check_login($dbc, $email = '', $pass = '') {
 
                 // Fetch the record:
                 $row = mysqli_fetch_array($r, MYSQLI_ASSOC);
-
                 // return true and the record:
                 return [true, $row];
 
@@ -56,8 +55,6 @@ function check_login($dbc, $email = '', $pass = '') {
             }
 
     } // End of empty($errors) IF.
-
     // Return false and the errors:
     return [false, $errors];
-
 } // End of check_login() function
