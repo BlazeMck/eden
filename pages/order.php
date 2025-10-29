@@ -45,7 +45,7 @@
         } else {
             $custinfo .= 'Placed By: Guest Account
                           <h3 class="border-bottom">Shipping Details:</h3>';
-                if (!empty($_SESSION['user_level']) &&$_SESSION['user_level'] == 0) {
+                if (!empty($_SESSION['user_level']) && $_SESSION['user_level'] == 0) {
                     $custinfo .= '<p>'. $details['ad'] .' '. $details['city'] .', '. $details['st'] .' '. $details['zip'] .'</p>';
                 } else {
                     $custinfo .= '<p>All shipping details can be found within the Email sent to the Email address provided at time of checkout. If you require additional assistance in regards to your order, please contact a system administrator.</p>';  

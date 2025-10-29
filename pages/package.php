@@ -21,27 +21,17 @@
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['quantity']) && is_numeric($_POST['quantity'])) {
         $qty = $_POST['quantity'];
-        if (isset($_SESSION['cart'])) {
-                if (isset($_SESSION['cart'][$id])) {
-                    $_SESSION['cart'][$id] += $qty;
-                } else {
-                    $_SESSION['cart'][$id] = $qty;
-                }
-                if ($_SESSION['cart'][$id] > 10) {
-                    $_SESSION['cart'][$id] = 10;
-                }
+        if (!isset($_SESSION['cart'])) {
+            $_SESSION['cart'] = [];
+        }
+
+        if (isset($_SESSION['cart'][$id])) {
+            $_SESSION['cart'][$id] += $qty;
         } else {
-            
-            $cartCookie = empty($_COOKIE['cart']) ? null : json_decode($_COOKIE['cart']);
-            if (isset($cartCookie[$id])) {
-                $cartCookie[$id] += $qty;
-            } else {
-                $cartCookie[$id] = $qty;
-            }
-            if ($cartCookie[$id] > 10) {
-                $cartCookie[$id] = 10;
-            }
-            $_COOKIE['cart'] = json_encode($cartCookie);
+            $_SESSION['cart'][$id] = $qty;
+        }
+        if ($_SESSION['cart'][$id] > 10) {
+            $_SESSION['cart'][$id] = 10;
         }
         
     }
@@ -62,9 +52,9 @@
             <div style="width: 700px; height: 550px; background-color: white;">
                 <image src="'. $src .'" width="500" height="500" style="margin-left: 100px; margin-top: 25px;">
             </div>
-            <div class="d-flex flex-column align-items-end border px-4" style="margin-left: 80px; width: 300px;">
+            <div class="d-flex flex-column align-items-end border border-2 px-4" style="margin-left: 80px; width: 300px;">
                 <h2>'. $package['package_name'] .'</h2>
-                <h4>'. $package['package_price'] .'</h4>
+                <h4 class="price">'. $package['package_price'] .'</h4>
                 <p>'. $package['package_desc'] .'</p>
                 <form action=package.php?id='. $id .' method=post class="my-4">
                     <p>Quantity: <input type="number" name="quantity" step=1 size=3 value=1 min=1 max=10></p>

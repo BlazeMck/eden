@@ -12,14 +12,14 @@
 	<link href="../css/table.css" rel="stylesheet">
 	<link href="../css/validation.css" rel="stylesheet">
 	<link href="../css/webpage.css" rel="stylesheet">
-	<nav class="navbar navbar-expand-lg bg-body-tertiary">
+	<nav class="navbar navbar-expand-lg bg-body-tertiary fancy" style="z-index: 1000;">
 		<div class="container-fluid">
-		  <a class="navbar-brand" href="../pages/index.php"><image src="../includes/media/tree.jpg" height="35"></image>Eden Seed Reserve</a>
+		  <a class="navbar-brand" href="../pages/index.php" style="scale: 120%;"><image src="../includes/media/tree.png" height="35"></image>Eden Seed Reserve</a>
 		  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		  </button>
-		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+		  <div class="collapse navbar-collapse ms-4 border-start border-3 ps-5" id="navbarSupportedContent">
+			<ul class="navbar-nav me-auto mb-2 mb-lg-0" style="scale: 120%;">
 			  <li class="nav-item">
 				<a class="nav-link active" aria-current="page" href="../pages/index.php">Home</a>
 			  </li>
@@ -47,7 +47,7 @@
 					echo '
 						</div>
 					</div>
-					<div class="d-flex flex-column">
+					<div class="d-flex flex-column ms-2">
 						<li><a class="dropdown-item" href="../pages/seeds.php"><strong>Seeds</strong></a></li>
 						<div class="d-flex flex-column border-start" style="flex-wrap: wrap; max-height: 300px;">';
 						$q = "SELECT seed_name, seed_id FROM seeds";
@@ -109,5 +109,6 @@
 		  </div>
 		</div>
 	  </nav>
+	  </head>
 	<div class="container my-1">
 <!-- Begin page content -->

@@ -105,7 +105,7 @@
 			];
 
 				$response = $mj->post(Resources::$Email, ['body' => $body]);
-				$response->success() && var_dump($response->getData());
+				$response->success();
 
 				echo '<h1 style="text-align: center;">Thank you for registering, '. $fn .' '. stripslashes($ln) .'!</h1>
 				<p style="text-align: center;">A confirmation email has been sent to your address. Please click on the link in that email in order to activate your account.</p><p style="text-align: center;">Make sure to check spam folders if you do not see your email.<br></p>';
@@ -119,8 +119,18 @@
 ?>
 </head>
 <body>
-	<div class="d-flex justify-content-center">
+	<div class="d-flex align-items-center flex-column">
+		<?php
+			if (isset($errors) && !empty($errors)) {
+				echo '<p class="error" style="font-size: 15px;">The following error(s) occurred:<br>';
+				foreach ($errors as $msg) {
+					echo " - $msg<br>\n";
+				}
+				echo '<h5 style="text-align: center;">Please try again</h5></p>';
+			}
+		?>
 		<div class="d-flex bg-success-subtle p-2 flex-column my-5">
+			
 		<h1>Signup</h1>
 		<form action="signup.php" method="post" novalidate>
 			<p>Please enter your information</p>
@@ -133,15 +143,6 @@
 			<p><input type="submit" name="submit" value="Register"></p>
 		</form>
 		</div>
-		<?php
-			if (isset($errors) && !empty($errors)) {
-				echo '<p class="error" style="font-size: 15px;">The following error(s) occurred:<br>';
-				foreach ($errors as $msg) {
-					echo " - $msg<br>\n";
-				}
-				echo '<h5 style="text-align: center;">Please try again<h5></p>';
-			}
-		?>
 	</div>
 <?php
 	include('../includes/footer.html');

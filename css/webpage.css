@@ -1,7 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Kings&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Kings&display=swap');
+
 .container {
     background-color: #c1c995;
-    min-height: 955px;
     max-width: 1300px;
+    min-height: 1000px;
+    padding: 2rem;
 }
 
 body {
@@ -9,6 +13,7 @@ body {
     background-repeat: no-repeat;
     background-size: 150%, 150%;
     background-position: center;
+    font-family: 'Jost', sans-serif;
 }
 
 #package:hover {
@@ -21,4 +26,16 @@ body {
     background-color: #967458a2;
     opacity: 80%;
     cursor: pointer;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Kings', sans-serif;
+}
+
+.fancy {
+    font-family: 'Kings', sans-serif;
+}
+
+.price {
+    font-family: 'Jost', sans-serif;
 }

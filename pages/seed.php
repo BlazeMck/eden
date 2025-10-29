@@ -35,7 +35,7 @@
             <div style="width: 700px; height: 550px; background-color: white;">
                 <image src="'. $src .'" width="500" height="500" style="margin-left: 100px; margin-top: 25px;">
             </div>
-			<div class="d-flex flex-column align-items-end border px-4" style="margin-left: 80px; width: 300px;">
+			<div class="d-flex flex-column align-items-end border border-2 px-4" style="margin-left: 80px; width: 300px;">
 				<h2>'. $seed['seed_name'] .'</h2>
 				<h4>'. $seed['seed_blurb'] .'</h4>
 				<p>'. $seed['seed_desc'] .'</p>
@@ -67,11 +67,12 @@
         echo '
                 </tbody>
             </table>
-			<h4>Tips and Tricks</h4>
-			<h4>When To Plant</h4>
-			<h4>How To Care For</h4>
-			<h4>How To Harvest</h4>
-			<h4>What To Do After</h4>
+			<a href="../pages/gardening.php"><h4>Tips and Tricks</h4></a>';
+			// <h4>When To Plant</h4>
+			// <h4>How To Care For</h4>
+			// <h4>How To Harvest</h4>
+			// <h4>What To Do After</h4>
+        echo '
         </div>
         ';
 	?>

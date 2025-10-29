@@ -1,4 +1,3 @@
-console.log('This should print...');
 const methodCr = document.getElementById('cr');
 const methodGi = document.getElementById('gi');
 const same = document.getElementById('same');
@@ -23,11 +22,11 @@ methodCr.addEventListener('change', changeMethod);
 
 function changeMethod(element) {
     if(element.target == methodCr) {
-        cardArr[2].removeAttribute('disabled');
         cardArr[3].removeAttribute('disabled');
     } else if(element.target == methodGi){
-        cardArr[2].setAttribute('disabled', 'disabled');
         cardArr[3].setAttribute('disabled', 'disabled');
+        cardArr[3].classList.add('ignore');
+        cardArr[3].value = '';
     }
 }
 
@@ -59,8 +58,6 @@ inputArr.forEach(array => {
 function validateInput(element) {
     const eleName = element.target.name;
     const eleValue = element.target.value;
-
-    console.log(`${eleName} - ${eleValue}`);
 
     var regExp = null;
     switch (eleName) {
@@ -107,9 +104,6 @@ function validateInput(element) {
             break;
     }
 
-    console.log(regExp);
-    console.log(eleValue.search(regExp));
-
     if (regExp) {
         if (!eleValue.search(regExp)) {
             element.target.classList.remove('invalid');
@@ -135,12 +129,10 @@ function validateForm() {
             if (element.name == 'bill_line_2' || element.name == 'ship_line_2') {
                 if (element.classList.contains('invalid')) {
                     invalid = true;
-                    console.log(`invalid input: ${element.name}`);
                 }
             }
-            else if (element.classList.contains('invalid') || element.value == '' ) {
+            else if ((element.classList.contains('invalid') || element.value == '' ) && !element.classList.contains('ignore')) {
                 invalid = true;
-                console.log(`invalid input: ${element.name}`)
             }
         });
     });
@@ -148,6 +140,45 @@ function validateForm() {
     if (!invalid) {
         submit.removeAttribute('disabled');
     } else {
-        submit.setAttribute('disabled');
+        submit.setAttribute('disabled', 'disabled');
+    }
+}
+
+cardArr[0].addEventListener("input", autoDashes);
+
+function autoDashes(element) {
+    const eleValue = element.target.value;
+    if (eleValue.length % 5 == 0 && element.inputType != "deleteContentBackward" && element.data != "-") {
+        var chars = eleValue.split('');
+        var input = chars.pop();
+        var output = '';
+
+        chars.forEach(char => {
+            output += char;
+        });
+        output += '-';
+        output += input;
+
+        element.target.value = output;
+    }
+}
+
+cardArr[1].addEventListener("input", autoSlashes);
+
+function autoSlashes(element) {
+    const eleValue = element.target.value;
+
+    if (eleValue.length % 3 == 0 && element.inputType != "deleteContentBackward" ** element.data != "/") {
+        var chars = eleValue.split('');
+        var input = chars.pop();
+        var output = '';
+
+        chars.forEach(char => {
+            output += char;
+        });
+        output += '/';
+        output += input;
+
+        element.target.value = output;
     }
 }

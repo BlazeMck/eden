@@ -22,7 +22,7 @@
     <h1>Checkout</h1>
     <form method="post" id="form" action="../pages/complete.php">
         <div class="d-flex flex-direction-row" style="margin-top: 60px;">
-            <div class="border p-2 mx-auto d-flex flex-direction-row" style="scale: 120%; width: 35%">
+            <div class="border p-2 mx-auto d-flex flex-direction-row" style="scale: 120%; width: 37%">
                 <div style="width: 50%;">
                     <div id="cardInfo">
                         <h4>Payment Method:</h4>

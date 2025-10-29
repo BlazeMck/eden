@@ -242,14 +242,14 @@
 </head>
 <body>
 	<h1><?php echo $_SESSION['first_name']; ?></h1>
-	<div class="d-flex flex-direction-row mx-4 my-3" >
+	<div class="d-flex flex-direction-row" style="scale: 125%; margin-left: 10rem; margin-top: 5rem;">
 		<div class="list-group">
 			<a href="../pages/user.php?list=s" class="list-group-item list-group-item-action"><h4>Settings</h4></a>
 			<a href="../pages/user.php?list=i" class="list-group-item list-group-item-action"><h4>Personal Info</h4></a>
 			<a href="../pages/orders.php" class="list-group-item list-group-item-action"><h4>Past Orders</h4></a>
 			<a data-bs-toggle="modal" data-bs-target="#exampleModal" class="list-group-item list-group-item-action stretched-link" style="cursor: pointer;"><h4>Delete Account</h4></a>
 		</div>
-		<div class="content border" style="margin-left: 100px; padding-top: 20px; padding-bottom: 50px; padding-left: 40px; padding-right: 40px; max-width: 400px;">
+		<div class="content border border-3 border-warning-subtle" style="margin-left: 100px; padding-top: 20px; padding-bottom: 50px; padding-left: 40px; padding-right: 40px; max-width: 400px;">
 		<?php echo $content ?>
 		</div>
 	</div>
