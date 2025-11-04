@@ -5,14 +5,14 @@
 </head>
 <body>
 	<div class="d-flex flex-column align-items-center mx-auto" style="scale: 125%; margin-top: 12rem; margin-bottom: 12rem; max-width: 70%;">
-	<div class="page-header border-bottom border-3 border-warning-subtle"><h1>Eden Seed Reserve</h1></div>
+	<div class="page-header border-bottom border-3 border-warning-subtle"><h1>Possessive Eden</h1></div>
 
 	<h2>Your Foundation for a Future</h2>
 		<image src="../includes/media/gardening.jpg" width="700" height="400"></image><br>
 	<h2>Secure Your Tomorrow. Grow Your Own Eden.</h2><br>
 	
 	
-	<p>Eden Seed Reserve provides the meticulously curated, non-GMO, heirloom seeds you need to ensure food security,
+	<p>Possessive Eden provides the meticulously curated, non-GMO, heirloom seeds you need to ensure food security,
 		regardless of what tomorrow brings. Whether you're a survivalist planning for the long term or a self-sufficient gardener,
 		start your reserve here!
 	</p>  
@@ -48,7 +48,7 @@
 		<li><strong>Beginner-Friendly:</strong> Visit our "Tips and Tricks" page to learn how to start your fresh garden.</li>
 	</ul>
     
-	<h3 class="my-2">Why Eden Seed Reserve?</h3>
+	<h3 class="my-2">Why Possessive Eden?</h3>
 
 	<ul class="my-2">
 		<li><strong>100% Heirloom & Open-Pollinated:</strong> All seeds are open-pollinated, meaning you can harvest the seeds from your produce to plant them again next year.</li>

@@ -4,7 +4,7 @@
 ?>
 <body>
 	<h1>Tips and Tricks</h1><br>
-	<p style="font-size: 24px; text-align: center; padding-left: 3rem; padding-right: 3rem;">Here is a list of fundamental tips you can implement into your garden at home to help encourage bountiful growth! The key to having a flourishing home garden is research. Although Eden Seed Reserve offers generalized tips, make sure you know what you are planting and how to best care for your new plants!</p>
+	<p style="font-size: 24px; text-align: center; padding-left: 3rem; padding-right: 3rem;">Here is a list of fundamental tips you can implement into your garden at home to help encourage bountiful growth! The key to having a flourishing home garden is research. Although Possessive Eden offers generalized tips, make sure you know what you are planting and how to best care for your new plants!</p>
 	<br>
 	<div style="margin-left: 6rem; margin-top: 6rem; margin-bottom: 4rem;" class="d-flex">
 	<div style="scale: 120%;" >
