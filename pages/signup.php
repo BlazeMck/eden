@@ -86,7 +86,7 @@
 					[
 						'From' => [
 							'Email' => "blazemckinlay@gmail.com",
-							'Name' => "Possessive Eden"
+							'Name' => "Eden's Seed Reserve"
 						],
 						'To' => [
 							[
@@ -94,9 +94,9 @@
 								'Name' => "$fn $ln"
 							]
 						],
-						'Subject' => "Welcome to Possessive Eden!",
+						'Subject' => "Welcome to Eden's Seed Reserve!",
 						'TextPart' => "Activation Email",
-						'HTMLPart' => "<h3>Hello $fn,</h3><p>In order to login and access your account on Possessive Eden's website you need to activate your email.</p>
+						'HTMLPart' => "<h3>Hello $fn,</h3><p>In order to login and access your account on Eden's Seed Reserve's website you need to activate your email.</p>
 						<p>To activate your email, please follow this link:</p><br>
 						<h4><a href=\"$url\">$url</a></h4><br>
 						<p>We appreciate you taking the time to join our family!</p>"
