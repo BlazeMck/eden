@@ -79,7 +79,8 @@
 			$r = @mysqli_query($dbc, $q);
 			if($r) {
 
-				$url = 'http://localhost/eden/pages/activate.php?email='. urlencode($e) .'&id='. $a;
+				$url = 'http://'. $_SERVER['HTTP_HOST'];
+				$url .= '/eden/pages/activate.php?email='. urlencode($e) .'&id='. $a;
 
 			$body = [
 				'Messages' => [
